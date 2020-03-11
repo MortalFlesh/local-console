@@ -3,7 +3,10 @@ storage: none
 
 source https://api.nuget.org/v3/index.json
 nuget FSharp.Core
+nuget FSharp.Data
 nuget MF.ConsoleApplication ~> 2.0
+nuget LibGit2Sharp
+nuget Newtonsoft.Json
 
 // [ FAKE GROUP ]
 group Build

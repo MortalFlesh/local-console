@@ -14,9 +14,8 @@ module Console =
 
     [<RequireQualifiedAccess>]
     module Option =
-        let outputFile = Option.required "output" (Some "o") "File where the output will be written." None
+        let outputFile = Option.optional "output" (Some "o") "File where the output will be written." None
 
     [<RequireQualifiedAccess>]
     module Input =
-        let getRepositories = Input.getArgumentValue "repositories"
-        let getOutputFile = Input.getOptionValue "output"
+        let getRepositories = Input.getArgumentValueAsList "repositories"

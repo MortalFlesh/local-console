@@ -21,10 +21,43 @@ let main argv =
             ]
             Options = [
                 Option.outputFile
+                Option.optional "ignore-repo" None "Path to file where there are repositories which will be ignored no matter where they are." None
+                Option.optional "ignore-file" None "Path to file where there are files/paths which will be ignored from currently ignored files in repositories." None
+                Option.noValue "only-complete" None "Select only repositories with all changes commited."
+                Option.noValue "only-incomplete" None "Select only repositories where are some uncommited changes (untracked files, modified, ...)."
             ]
             Initialize = None
             Interact = None
             Execute = fun (input, output) ->
+                let paths = input |> Input.getRepositories
+                let outputFile =
+                    match input with
+                    | Input.OptionOptionalValue "output" file -> Some file
+                    | _ -> None
+
+                let completeRepository =
+                    match input with
+                    | Input.HasOption "only-complete" _ -> RepositoryBackup.CompleteRepository.OnlyComlete
+                    | Input.HasOption "only-incomplete" _ -> RepositoryBackup.CompleteRepository.OnlyIncomplete
+                    | _ -> RepositoryBackup.CompleteRepository.All
+
+                let ignoredFiles =
+                    match input with
+                    | Input.OptionValue "ignore-file" ignored -> ignored |> FileSystem.readLines
+                    | _ -> []
+
+                let ignoredRepositories =
+                    match input with
+                    | Input.OptionValue "ignore-repo" ignored -> ignored |> FileSystem.readLines
+                    | _ -> []
+
+                paths
+                |> RepositoryBackup.execute output completeRepository ignoredFiles ignoredRepositories (
+                    match outputFile with
+                    | Some file -> RepositoryBackup.Output.File file
+                    | _ -> RepositoryBackup.Output.Stdout output
+                )
+
                 output.Success "Done"
                 ExitCode.Success
         }
