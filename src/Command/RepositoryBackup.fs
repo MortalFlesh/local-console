@@ -17,6 +17,8 @@ module RepositoryBackupCommand =
 
     open Path.Operators
 
+    // todo -backup current branch as well
+
     let execute (output: MF.ConsoleApplication.Output) completeRepository ignoredFiles ignoredRepositories commandOutput paths =
         let entryPath (entry: StatusEntry) = entry.FilePath
 

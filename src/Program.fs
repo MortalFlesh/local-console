@@ -64,12 +64,17 @@ let main argv =
 
         command "repository:create" {
             Description = "Create backuped repositories - command will download all repositories from backup file."
-            Help = None
+            Help = commandHelp [
+                "Limitation of current implementation is that it cant clone repository from ssh (it could be solved by ...)."
+                "Yet for now, just use <c:yellow>--as-shell</c> option to create a shell script, which will have your credentials when you run it."
+            ]
             Arguments = [
                 Argument.required "backup" "Path to directory with backup files."
             ]
             Options = [
                 Option.optionalArray "ignore-remote" None "Remote url to ignore" None
+                Option.noValue "dry-run" None "Whether to run command just to output what it would have done."
+                Option.noValue "as-shell" None "Whether to just create a shell script, which will do the work."
             ]
             Initialize = None
             Interact = None
@@ -82,7 +87,12 @@ let main argv =
                     | _ -> []
 
                 backupDir
-                |> RepositoryCreateCommand.execute output ignoreRemotes
+                |> RepositoryCreateCommand.execute output ignoreRemotes (
+                    match input with
+                    | Input.HasOption "dry-run" _ -> RepositoryCreateCommand.Mode.DryRun
+                    | Input.HasOption "as-shell" _ -> RepositoryCreateCommand.Mode.CreateShell
+                    | _ -> RepositoryCreateCommand.Mode.CreateRepositories
+                )
 
                 output.Success "Done"
                 ExitCode.Success

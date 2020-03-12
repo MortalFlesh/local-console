@@ -7,43 +7,90 @@ module RepositoryCreateCommand =
     open MF.ConsoleApplication
     open LibGit2Sharp
 
-    type BackupSchema = JsonProvider<"src/schema/backup.json">
+    type private BackupSchema = JsonProvider<"src/schema/backup.json">
+
+    type Mode =
+        | CreateShell
+        | DryRun
+        | CreateRepositories
+
+    let mutable private reposWithError: (string list) list = []
+    let mutable private shellLines: string list = []
+
+    let private addRepoError message =
+        reposWithError <- message :: reposWithError
+
+    let private addShellCommand command =
+        shellLines <- command :: shellLines
+
+    let private createRepository output mode repositoryName =
+        match mode with
+        | CreateShell -> sprintf "echo \"Create %s ...\"" repositoryName |> addShellCommand
+        | DryRun
+        | CreateRepositories -> output.Section <| sprintf "Create %s" repositoryName
+
+    let private skipRepository output mode reason =
+        match mode with
+        | CreateShell -> sprintf "echo \" - skipped for %s ...\"" reason |> addShellCommand
+        | DryRun
+        | CreateRepositories -> output.Message <| sprintf "<c:yellow> - skipped for %s</c>" reason
+
+    let private ensureDir output mode dir =
+        match mode with
+        | CreateShell -> sprintf "mkdir -p %A" dir |> addShellCommand
+        | DryRun -> output.Message <| sprintf " - <c:cyan>Directory.ensure</c> %A -> %s" dir (if Directory.Exists dir then "<c:gray>already there</c>" else "<c:yellow>create</c>")
+        | CreateRepositories -> Directory.ensure dir
+
+    let private copyFile output mode repositoryName source target =
+        match mode with
+        | CreateShell ->
+            if File.Exists source then sprintf "cp -R %A %A" source target |> addShellCommand
+            else [repositoryName; sprintf "! file %A does not exists" source] |> addRepoError
+        | DryRun -> output.Message <| sprintf " - <c:cyan>File.Copy</c> %A -> %A" source target
+        | CreateRepositories ->
+            try File.Copy(source, target, true)
+            with | e -> [repositoryName; sprintf "! %s" e.Message] |> addRepoError
 
     open Path.Operators
 
-    let execute (output: MF.ConsoleApplication.Output) (ignoredRemotes: string list) backupDir =
+    let private cloneRepository output mode repositoryName url targetDir =
+        match mode with
+        | CreateShell -> sprintf "git clone %s %A" url (targetDir / repositoryName) |> addShellCommand
+        | DryRun -> output.Message <| sprintf " - <c:cyan>Repository.Clone</c> %A -> %A" url targetDir
+        | CreateRepositories -> Repository.Clone(url, targetDir) |> ignore  // todo - https://stackoverflow.com/questions/40700154/clone-a-git-repository-with-ssh-and-libgit2sharp
+
+    let execute (output: MF.ConsoleApplication.Output) (ignoredRemotes: string list) mode backupDir =
         let repositories =
             [ backupDir ]
             |> FileSystem.getAllFiles
             |> List.filter (fun f -> f.EndsWith("backup.json"))
 
-        let mutable reposWithError = []
+        let createRepository = createRepository output mode
+        let skipRepository = skipRepository output mode
+        let ensureDir = ensureDir output mode
+        let copyFile = copyFile output mode
+        let cloneRepository = cloneRepository output mode
 
-        let rec copyFiles repository backupRepositoryDir targetDir = function
+        let rec copyFiles repositoryName backupRepositoryDir targetDir = function
             | [] -> ()
             | files ->
                 files
                 |> List.iter (fun file ->
                     let fileTargetPath = targetDir / file
 
+                    if output.IsDebug() then output.Message <| sprintf " - Copy file %s -> %s" (backupRepositoryDir / file) fileTargetPath
+
                     if Directory.Exists (backupRepositoryDir / file)
                         then
                             backupRepositoryDir / file
                             |> Directory.GetFiles
                             |> Seq.toList
-                            |> copyFiles repository (backupRepositoryDir / file) fileTargetPath
+                            |> copyFiles repositoryName (backupRepositoryDir / file) fileTargetPath
                         else
                             let fileTargetDir = fileTargetPath |> Path.dirName
 
-                            Directory.ensure fileTargetDir
-
-                            try
-                                File.Copy(backupRepositoryDir / file, fileTargetPath, true)
-                            with
-                            | e ->
-                                let message = sprintf "! %s" e.Message
-
-                                reposWithError <- [repository; message] :: reposWithError
+                            ensureDir fileTargetDir
+                            copyFile repositoryName (backupRepositoryDir / file) fileTargetPath
                 )
 
         repositories
@@ -51,39 +98,47 @@ module RepositoryCreateCommand =
             let repositoryBackupPath = Path.GetDirectoryName(backupFile)
             let repository = backupFile |> File.ReadAllText |> BackupSchema.Parse
 
-            output.Section <| sprintf "Create %s" repository.Name
+            createRepository repository.Name
 
-            let topLevelDir = repository.Path |> Path.dirName
-            Directory.ensure topLevelDir    // create top level directory (not repository dir)
+            let topLevelDir =
+                repository.Path
+                |> Path.dirName
+                |> tee ensureDir
 
             let remotes = repository.Remotes |> Seq.toList
 
             if remotes |> List.exists (fun r -> ignoredRemotes |> List.exists (fun ignored -> r.Url.Contains(ignored)))
-                then output.Message "<c:yellow> - skipped for remote</c>"
-                else
-                    let url =
-                        remotes
-                        |> List.tryFind (fun r -> r.Name = "origin")
-                        |> Option.bind (fun _ -> repository.Remotes |> Seq.tryHead)
-                        |> Option.map (fun r -> r.Url)
+            then skipRepository "ignored remote"
+            elif Directory.Exists repository.Path then skipRepository "already there"
+            else
+                let url =
+                    remotes
+                    |> List.tryFind (fun r -> r.Name = "origin")
+                    |> Option.bind (fun _ -> repository.Remotes |> Seq.tryHead)
+                    |> Option.map (fun r -> r.Url)
 
-                    match url with
-                    | Some url ->
-                        Repository.Clone(url, topLevelDir) |> ignore
-                    | _ ->
-                        output.Message "<c:yellow> - no remote defined</c>"
-                        Directory.ensure repository.Path
+                if output.IsVerbose() then output.Message <| sprintf " - remote url: %A" url
 
-                    repository.Ignored |> Seq.toList |> copyFiles repository.Name repositoryBackupPath repository.Path
-                    repository.Untracked |> Seq.toList |> copyFiles repository.Name repositoryBackupPath repository.Path
-                    repository.NotCommited |> Seq.toList |> List.distinct |> copyFiles repository.Name repositoryBackupPath repository.Path
+                match url with
+                | Some url -> cloneRepository repository.Name url topLevelDir
+                | _ ->
+                    output.Message "<c:yellow> - no remote defined</c>"
+                    ensureDir repository.Path
 
-                    output.Success " - done"
+                let copyFiles subdir = copyFiles repository.Name (repositoryBackupPath / subdir) repository.Path
+
+                repository.Ignored |> Seq.toList |> copyFiles "ignored"
+                repository.Untracked |> Seq.toList |> copyFiles "untracked"
+                repository.NotCommited |> Seq.toList |> List.distinct |> copyFiles "notCommited"
+
+                output.Success " - done"
         )
 
-        reposWithError
-            |> List.distinct
-            |> List.sort
-            |> output.Options "Repository with errors:"
+        "#!/bin/bash" :: "" :: "set -e" :: ""
+        :: ("echo \"Done\"" :: shellLines |> List.rev)
+        |> FileSystem.writeSeqToFile "output-shell.sh"
 
-        ()
+        reposWithError
+        |> List.distinct
+        |> List.sort
+        |> output.Options "Repository with errors:"
