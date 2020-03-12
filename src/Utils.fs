@@ -70,6 +70,26 @@ module String =
     let trimEnd (char: char) (string: string) =
         string.TrimEnd char
 
+[<RequireQualifiedAccess>]
+module Directory =
+    open System.IO
+
+    let ensure (path: string) =
+        if path |> Directory.Exists |> not then Directory.CreateDirectory(path) |> ignore
+
+[<RequireQualifiedAccess>]
+module Path =
+    open System.IO
+
+    let fileName = String.split "/" >> List.rev >> List.head
+
+    let dirName path =
+        let file = path |> fileName
+        path.Substring(0, path.Length - file.Length)
+
+    module Operators =
+        let (/) a b = Path.Combine(a, b)
+
 [<AutoOpen>]
 module Regexp =
     open System.Text.RegularExpressions

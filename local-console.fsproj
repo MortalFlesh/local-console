@@ -15,9 +15,11 @@
   <ItemGroup>
     <Compile Include="src/Utils.fs" />
   </ItemGroup>
-  
+
   <ItemGroup>
+    <Compile Include="src/Command/Types.fs" />
     <Compile Include="src/Command/RepositoryBackup.fs" />
+    <Compile Include="src/Command/RepositoryCreate.fs" />
   </ItemGroup>
 
   <ItemGroup>

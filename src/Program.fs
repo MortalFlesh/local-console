@@ -37,9 +37,9 @@ let main argv =
 
                 let completeRepository =
                     match input with
-                    | Input.HasOption "only-complete" _ -> RepositoryBackup.CompleteRepository.OnlyComlete
-                    | Input.HasOption "only-incomplete" _ -> RepositoryBackup.CompleteRepository.OnlyIncomplete
-                    | _ -> RepositoryBackup.CompleteRepository.All
+                    | Input.HasOption "only-complete" _ -> RepositoryBackupCommand.CompleteRepository.OnlyComlete
+                    | Input.HasOption "only-incomplete" _ -> RepositoryBackupCommand.CompleteRepository.OnlyIncomplete
+                    | _ -> RepositoryBackupCommand.CompleteRepository.All
 
                 let ignoredFiles =
                     match input with
@@ -52,11 +52,37 @@ let main argv =
                     | _ -> []
 
                 paths
-                |> RepositoryBackup.execute output completeRepository ignoredFiles ignoredRepositories (
+                |> RepositoryBackupCommand.execute output completeRepository ignoredFiles ignoredRepositories (
                     match outputFile with
-                    | Some file -> RepositoryBackup.Output.File file
-                    | _ -> RepositoryBackup.Output.Stdout output
+                    | Some file -> RepositoryBackupCommand.Output.File file
+                    | _ -> RepositoryBackupCommand.Output.Stdout output
                 )
+
+                output.Success "Done"
+                ExitCode.Success
+        }
+
+        command "repository:create" {
+            Description = "Create backuped repositories - command will download all repositories from backup file."
+            Help = None
+            Arguments = [
+                Argument.required "backup" "Path to directory with backup files."
+            ]
+            Options = [
+                Option.optionalArray "ignore-remote" None "Remote url to ignore" None
+            ]
+            Initialize = None
+            Interact = None
+            Execute = fun (input, output) ->
+                let backupDir = input |> Input.getArgumentValue "backup"
+
+                let ignoreRemotes =
+                    match input with
+                    | Input.OptionListValue "ignore-remote" ignored -> ignored
+                    | _ -> []
+
+                backupDir
+                |> RepositoryCreateCommand.execute output ignoreRemotes
 
                 output.Success "Done"
                 ExitCode.Success

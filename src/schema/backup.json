@@ -1,0 +1,19 @@
+{
+    "Path": "/Users/name/fsharp/local-console",
+    "Name": "local-console",
+    "Remotes": [
+        {
+            "Name": "origin",
+            "Url": "git@github.com:MortalFlesh/local-console.git"
+        }
+    ],
+    "Untracked": [
+        "file.txt"
+    ],
+    "NotCommited": [
+        "file.txt"
+    ],
+    "Ignored": [
+        "file.txt"
+    ]
+}

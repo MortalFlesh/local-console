@@ -1,7 +1,7 @@
 namespace MF.LocalConsole
 
 [<RequireQualifiedAccess>]
-module RepositoryBackup =
+module RepositoryBackupCommand =
     open System.IO
     open MF.ConsoleApplication
     open LibGit2Sharp
@@ -14,55 +14,6 @@ module RepositoryBackup =
         | All
         | OnlyComlete
         | OnlyIncomplete
-
-    type Remote = {
-        Name: string
-        Url: string
-    }
-
-    [<RequireQualifiedAccess>]
-    module Remote =
-        let format { Name = name; Url = url } =
-            sprintf "<c:dark-yellow>%s</c>:%s" name url
-
-    type RepositoryBackup = {
-        Path: string
-        Name: string
-        Remotes: Remote list
-        Untracked: string list
-        NotCommited: string list
-        Ignored: string list
-    }
-
-    [<RequireQualifiedAccess>]
-    module RepositoryBackup =
-        let private colorize title = function
-            | 0 -> sprintf "<c:gray>%s[0]</c>" title
-            | count -> sprintf "<c:yellow>%s[%i]</c>" title count
-
-        let formatToList repository =
-            [
-                repository.Path |> sprintf "<c:cyan>%s</c>"
-                repository.Remotes |> List.map Remote.format |> String.concat "; "
-                repository.Untracked |> List.length |> colorize "Untracked"
-                repository.NotCommited |> List.length |> colorize "NotCommited"
-                repository.Ignored |> List.length |> colorize "Ignored"
-            ]
-
-    [<RequireQualifiedAccess>]
-    module Directory =
-        let ensure (path: string) =
-            if path |> Directory.Exists |> not then Directory.CreateDirectory(path) |> ignore
-
-    [<RequireQualifiedAccess>]
-    module private Path =
-        let fileName = String.split "/" >> List.rev >> List.head
-        let dirName path =
-            let file = path |> fileName
-            path.Substring(0, path.Length - file.Length)
-
-        module Operators =
-            let (/) a b = Path.Combine(a, b)
 
     open Path.Operators
 
