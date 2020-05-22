@@ -62,37 +62,37 @@ let main argv =
                 ExitCode.Success
         }
 
-        command "repository:create" {
-            Description = "Create backuped repositories - command will download all repositories from backup file."
+        command "repository:build:list" {
+            Description = "List all repositories for the build.fsx version and type."
             Help = commandHelp [
-                "Limitation of current implementation is that it cant clone repository from ssh (it could be solved by ...)."
-                "Yet for now, just use <c:yellow>--as-shell</c> option to create a shell script, which will have your credentials when you run it."
-            ]
+                    "The <c:dark-green>{{command.name}}</c> saves repository remote urls:"
+                    "        <c:dark-green>dotnet {{command.full_name}}</c> <c:dark-yellow>path-to-repositories/</c>"
+                ]
             Arguments = [
-                Argument.required "backup" "Path to directory with backup files."
+                Argument.repositories
             ]
             Options = [
-                Option.optionalArray "ignore-remote" None "Remote url to ignore" None
-                Option.noValue "dry-run" None "Whether to run command just to output what it would have done."
-                Option.noValue "as-shell" None "Whether to just create a shell script, which will do the work."
+                Option.required "type" (Some "t") "Show only builds of this type." None
+                Option.required "build-version" (Some "b") "Show only builds of this version." None
             ]
             Initialize = None
             Interact = None
             Execute = fun (input, output) ->
-                let backupDir = input |> Input.getArgumentValue "backup"
+                let paths = input |> Input.getRepositories
 
-                let ignoreRemotes =
-                    match input with
-                    | Input.OptionListValue "ignore-remote" ignored -> ignored
-                    | _ -> []
+                let filter: RepositoryBuildListCommand.Filter = {
+                    BuildType =
+                        match input with
+                        | Input.OptionOptionalValue "type" buildType -> Some buildType
+                        | _ -> None
+                    Version =
+                        match input with
+                        | Input.OptionOptionalValue "build-version" version -> Some version
+                        | _ -> None
+                }
 
-                backupDir
-                |> RepositoryCreateCommand.execute output ignoreRemotes (
-                    match input with
-                    | Input.HasOption "dry-run" _ -> RepositoryCreateCommand.Mode.DryRun
-                    | Input.HasOption "as-shell" _ -> RepositoryCreateCommand.Mode.CreateShell
-                    | _ -> RepositoryCreateCommand.Mode.CreateRepositories
-                )
+                paths
+                |> RepositoryBuildListCommand.execute output filter
 
                 output.Success "Done"
                 ExitCode.Success

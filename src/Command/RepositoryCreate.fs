@@ -66,7 +66,7 @@ module RepositoryCreateCommand =
             |> List.filter (fun f -> f.EndsWith("backup.json"))
 
         let createRepository = createRepository output mode
-        let skipRepository = skipRepository output mode
+        let skipRepositoryMessage = skipRepository output mode
         let ensureDir = ensureDir output mode
         let copyFile = copyFile output mode
         let cloneRepository = cloneRepository output mode
@@ -108,8 +108,7 @@ module RepositoryCreateCommand =
             let remotes = repository.Remotes |> Seq.toList
 
             if remotes |> List.exists (fun r -> ignoredRemotes |> List.exists (fun ignored -> r.Url.Contains(ignored)))
-            then skipRepository "ignored remote"
-            elif Directory.Exists repository.Path then skipRepository "already there"
+            then skipRepositoryMessage "ignored remote"
             else
                 let url =
                     remotes
@@ -119,11 +118,13 @@ module RepositoryCreateCommand =
 
                 if output.IsVerbose() then output.Message <| sprintf " - remote url: %A" url
 
-                match url with
-                | Some url -> cloneRepository repository.Name url topLevelDir
-                | _ ->
-                    output.Message "<c:yellow> - no remote defined</c>"
-                    ensureDir repository.Path
+                if Directory.Exists repository.Path then skipRepositoryMessage "already there"
+                else
+                    match url with
+                    | Some url -> cloneRepository repository.Name url topLevelDir
+                    | _ ->
+                        output.Message "<c:yellow> - no remote defined</c>"
+                        ensureDir repository.Path
 
                 let copyFiles subdir = copyFiles repository.Name (repositoryBackupPath / subdir) repository.Path
 

@@ -70,6 +70,12 @@ module String =
     let trimEnd (char: char) (string: string) =
         string.TrimEnd char
 
+    let contains (subString: string) (string: string) =
+        string.Contains(subString)
+
+    let startsWith (prefix: string) (string: string) =
+        string.StartsWith(prefix)
+
 [<RequireQualifiedAccess>]
 module Directory =
     open System.IO

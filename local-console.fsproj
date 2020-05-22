@@ -20,6 +20,7 @@
     <Compile Include="src/Command/Types.fs" />
     <Compile Include="src/Command/RepositoryBackup.fs" />
     <Compile Include="src/Command/RepositoryCreate.fs" />
+    <Compile Include="src/Command/RepositoryBuildList.fs" />
   </ItemGroup>
 
   <ItemGroup>
