@@ -3,8 +3,6 @@ open System.IO
 open MF.ConsoleApplication
 open MF.LocalConsole
 open MF.LocalConsole.Console
-open FSharp.Data
-open System.Collections.Concurrent
 
 [<EntryPoint>]
 let main argv =
@@ -31,38 +29,7 @@ let main argv =
             ]
             Initialize = None
             Interact = None
-            Execute = fun (input, output) ->
-                let paths = input |> Input.getRepositories
-                let outputFile =
-                    match input with
-                    | Input.OptionOptionalValue "output" file -> Some file
-                    | _ -> None
-
-                let completeRepository =
-                    match input with
-                    | Input.HasOption "only-complete" _ -> RepositoryBackupCommand.CompleteRepository.OnlyComlete
-                    | Input.HasOption "only-incomplete" _ -> RepositoryBackupCommand.CompleteRepository.OnlyIncomplete
-                    | _ -> RepositoryBackupCommand.CompleteRepository.All
-
-                let ignoredFiles =
-                    match input with
-                    | Input.OptionValue "ignore-file" ignored -> ignored |> FileSystem.readLines
-                    | _ -> []
-
-                let ignoredRepositories =
-                    match input with
-                    | Input.OptionValue "ignore-repo" ignored -> ignored |> FileSystem.readLines
-                    | _ -> []
-
-                paths
-                |> RepositoryBackupCommand.execute output completeRepository ignoredFiles ignoredRepositories (
-                    match outputFile with
-                    | Some file -> RepositoryBackupCommand.Output.File file
-                    | _ -> RepositoryBackupCommand.Output.Stdout output
-                )
-
-                output.Success "Done"
-                ExitCode.Success
+            Execute = RepositoryBackupCommand.execute
         }
 
         command "repository:restore" {
@@ -81,25 +48,7 @@ let main argv =
             ]
             Initialize = None
             Interact = None
-            Execute = fun (input, output) ->
-                let backupDir = input |> Input.getArgumentValue "backup"
-
-                let mode =
-                    match input with
-                    | Input.HasOption "dry-run" _ -> RepositoryCreateCommand.DryRun
-                    | Input.HasOption "use-shell" _ -> RepositoryCreateCommand.CreateShell
-                    | _ -> RepositoryCreateCommand.CreateRepositories
-
-                let ignoredRemotes =
-                    match input with
-                    | Input.OptionValue "ignore-remote" ignored -> ignored |> FileSystem.readLines
-                    | _ -> []
-
-                backupDir
-                |> RepositoryCreateCommand.execute output ignoredRemotes mode
-
-                output.Success "Done"
-                ExitCode.Success
+            Execute = RepositoryCreateCommand.execute
         }
 
         command "repository:build:list" {
@@ -117,25 +66,7 @@ let main argv =
             ]
             Initialize = None
             Interact = None
-            Execute = fun (input, output) ->
-                let paths = input |> Input.getRepositories
-
-                let filter: RepositoryBuildListCommand.Filter = {
-                    BuildType =
-                        match input with
-                        | Input.OptionOptionalValue "type" buildType -> Some buildType
-                        | _ -> None
-                    Version =
-                        match input with
-                        | Input.OptionOptionalValue "build-version" version -> Some version
-                        | _ -> None
-                }
-
-                paths
-                |> RepositoryBuildListCommand.execute output filter
-
-                output.Success "Done"
-                ExitCode.Success
+            Execute = RepositoryBuildListCommand.execute
         }
 
         command "azure:func" {
@@ -154,80 +85,7 @@ let main argv =
             ]
             Initialize = None
             Interact = None
-            Execute = fun (input, output) ->
-                let appName = input |> Input.getArgumentValueAsString "app-name" |> Option.defaultValue "-"
-                let functionName = input |> Input.getArgumentValueAsString "function-name" |> Option.defaultValue "-"
-                let callCount = input |> Input.getArgumentValueAsString "call-count" |> Option.defaultValue "0" |> int
-                let code = input |> Input.getOptionValueAsString "code" |> Option.defaultValue "-"
-
-                output.Table ["app"; "func"; "calls"; "code"] [
-                    [ appName; functionName; string callCount; code ]
-                ]
-
-                output.SubTitle "Starting ..."
-                let progress = callCount |> output.ProgressStart "Function calls"
-
-                let baseUrl = sprintf "https://%s.azurewebsites.net/api/%s?code=%s" appName functionName code
-                let requests = ConcurrentDictionary<int, string>()
-
-                [
-                    for i in 0..callCount do
-                        yield async {
-                            let! rawResponse =
-                                Http.AsyncRequestString
-                                    (
-                                        baseUrl,
-                                        httpMethod = "POST",
-                                        headers = [
-                                            HttpRequestHeaders.Accept "application/vnd.api+json"
-                                            HttpRequestHeaders.ContentType "application/vnd.api+json"
-                                        ],
-                                        body = TextRequest
-                                            """{
-                                                "data": {
-                                                    "type": "normalization",
-                                                    "attributes": {
-                                                        "contact": {
-                                                            "email": " JaN.Novak@seznam.cz ",
-                                                            "phone": "603 123 122"
-                                                        }
-                                                    }
-                                                }
-                                            }"""
-                                    )
-                                |> Async.Catch
-
-                            progress |> output.ProgressAdvance
-
-                            return
-                                match rawResponse with
-                                | Choice1Of2 response ->
-                                    requests.AddOrUpdate(i, response, (fun _ _ -> response)) |> ignore
-
-                                    [ string i; "<c:green>Ok</c>" ]
-                                | Choice2Of2 e ->
-                                    let response = sprintf "Error: %A" e.Message
-                                    requests.AddOrUpdate(i, response, (fun _ _ -> response)) |> ignore
-
-                                    [ string i; "<c:red>Error</c>" ]
-                        }
-                ]
-                |> Async.Parallel
-                |> Async.RunSynchronously
-                |> tee (fun _ -> progress |> output.ProgressFinish; output.NewLine())
-                |> Seq.toList
-                |> output.Table [ "Request"; "Response" ]
-
-                if output.IsDebug() then
-                    output.Title "Real responses"
-
-                    requests
-                    |> Seq.toList
-                    |> List.map (fun kv -> [kv.Key |> string; kv.Value])
-                    |> output.Table [ "Request"; "Response" ]
-
-                output.Success "Done"
-                ExitCode.Success
+            Execute = AzureFuncCommand.execute
         }
 
         command "normalize:file" {
@@ -255,43 +113,7 @@ let main argv =
             Options = []
             Initialize = None
             Interact = None
-            Execute = fun (input, output) ->
-                let phone = input |> Input.getArgumentValueAsString "phone" |> Option.defaultValue ""
-
-                let tryParsePhone code phone =
-                    let phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance()
-                    phoneNumberUtil.Parse(phone, code)
-
-                try
-                    let parsedPhone = tryParsePhone null phone
-
-                    output.Table [ "original"; "p.code"; "p.nationalNumber" ] [
-                        [
-                            phone
-                            parsedPhone.CountryCode |> string
-                            parsedPhone.NationalNumber |> string
-                        ]
-                    ]
-                with
-                | e ->
-                    try
-                        let parsedPhone = tryParsePhone "CZ" phone
-
-                        output.Table [ "original"; "p.code"; "p.nationalNumber" ] [
-                            [
-                                phone
-                                parsedPhone.CountryCode |> string
-                                parsedPhone.NationalNumber |> string
-                            ]
-                        ]
-
-                    with
-                    | _ ->
-                        e.Message
-                        |> sprintf "Phone %A is not valid: %A" phone
-                        |> output.Error
-
-                ExitCode.Success
+            Execute = NormalizeCommand.executePhone
         }
 
         command "stats:phone:code" {

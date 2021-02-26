@@ -2,6 +2,8 @@ namespace MF.LocalConsole
 
 [<RequireQualifiedAccess>]
 module RepositoryBuildListCommand =
+    open MF.ConsoleApplication
+    open MF.LocalConsole.Console
 
     type Filter = {
         BuildType: string option
@@ -36,7 +38,7 @@ module RepositoryBuildListCommand =
             | _ -> None
         | _ -> None
 
-    let execute (output: MF.ConsoleApplication.Output) filter paths =
+    let private run (output: MF.ConsoleApplication.Output) filter paths =
         paths
         |> FileSystem.getAllFiles
         |> List.filter (String.contains "build.fsx")
@@ -68,3 +70,23 @@ module RepositoryBuildListCommand =
         |> output.Options "Build list:"
 
         ()
+
+    let execute: Execute = fun (input, output) ->
+        let paths = input |> Input.getRepositories
+
+        let filter: Filter = {
+            BuildType =
+                match input with
+                | Input.OptionOptionalValue "type" buildType -> Some buildType
+                | _ -> None
+            Version =
+                match input with
+                | Input.OptionOptionalValue "build-version" version -> Some version
+                | _ -> None
+        }
+
+        paths
+        |> run output filter
+
+        output.Success "Done"
+        ExitCode.Success

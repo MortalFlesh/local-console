@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="src/Console.fs" />
     <Compile Include="src/Command/Types.fs" />
     <Compile Include="src/Command/RepositoryBackup.fs" />
     <Compile Include="src/Command/RepositoryCreate.fs" />
@@ -24,10 +25,10 @@
     <Compile Include="src/Command/Normalize.fs" />
     <Compile Include="src/Command/PhoneCodeStats.fs" />
     <Compile Include="src/Command/ContactStats.fs" />
+    <Compile Include="src/Command/AzureFunc.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src/Console.fs" />
     <Compile Include="src/Program.fs" />
   </ItemGroup>
 

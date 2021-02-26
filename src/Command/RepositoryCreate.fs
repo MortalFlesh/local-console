@@ -59,7 +59,7 @@ module RepositoryCreateCommand =
         | DryRun -> output.Message <| sprintf " - <c:cyan>Repository.Clone</c> %A -> %A" url targetDir
         | CreateRepositories -> Repository.Clone(url, targetDir) |> ignore  // todo - https://stackoverflow.com/questions/40700154/clone-a-git-repository-with-ssh-and-libgit2sharp
 
-    let execute (output: MF.ConsoleApplication.Output) (ignoredRemotes: string list) mode backupDir =
+    let private run (output: MF.ConsoleApplication.Output) (ignoredRemotes: string list) mode backupDir =
         let repositories =
             [ backupDir ]
             |> FileSystem.getAllFiles
@@ -143,3 +143,23 @@ module RepositoryCreateCommand =
         |> List.distinct
         |> List.sort
         |> output.Options "Repository with errors:"
+
+    let execute: Execute = fun (input, output) ->
+        let backupDir = input |> Input.getArgumentValue "backup"
+
+        let mode =
+            match input with
+            | Input.HasOption "dry-run" _ -> DryRun
+            | Input.HasOption "use-shell" _ -> CreateShell
+            | _ -> CreateRepositories
+
+        let ignoredRemotes =
+            match input with
+            | Input.OptionValue "ignore-remote" ignored -> ignored |> FileSystem.readLines
+            | _ -> []
+
+        backupDir
+        |> run output ignoredRemotes mode
+
+        output.Success "Done"
+        ExitCode.Success

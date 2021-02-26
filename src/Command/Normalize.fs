@@ -318,3 +318,41 @@ module NormalizeCommand =
 
         output.Success "Done"
         ExitCode.Success
+
+    let executePhone: Execute = fun (input, output) ->
+        let phone = input |> Input.getArgumentValueAsString "phone" |> Option.defaultValue ""
+
+        let tryParsePhone code phone =
+            let phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance()
+            phoneNumberUtil.Parse(phone, code)
+
+        try
+            let parsedPhone = tryParsePhone null phone
+
+            output.Table [ "original"; "p.code"; "p.nationalNumber" ] [
+                [
+                    phone
+                    parsedPhone.CountryCode |> string
+                    parsedPhone.NationalNumber |> string
+                ]
+            ]
+        with
+        | e ->
+            try
+                let parsedPhone = tryParsePhone "CZ" phone
+
+                output.Table [ "original"; "p.code"; "p.nationalNumber" ] [
+                    [
+                        phone
+                        parsedPhone.CountryCode |> string
+                        parsedPhone.NationalNumber |> string
+                    ]
+                ]
+
+            with
+            | _ ->
+                e.Message
+                |> sprintf "Phone %A is not valid: %A" phone
+                |> output.Error
+
+        ExitCode.Success
