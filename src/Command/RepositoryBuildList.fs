@@ -40,6 +40,7 @@ module RepositoryBuildListCommand =
         paths
         |> FileSystem.getAllFiles
         |> List.filter (String.contains "build.fsx")
+        |> List.filter (String.contains "cache" >> not)
         //|> tee (List.length >> sprintf "Builds[%A]" >> output.Message)
         |> List.collect (fun path ->
             path

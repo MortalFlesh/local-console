@@ -22,7 +22,7 @@ module RepositoryBackupCommand =
 
     [<RequireQualifiedAccess>]
     module Remote =
-        let format { Name = name; Url = url } =
+        let format ({ Name = name; Url = url }: Remote) =
             sprintf "<c:dark-yellow>%s</c>:%s" name url
 
     type RepositoryBackup = {
