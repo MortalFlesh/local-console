@@ -27,5 +27,7 @@ paket-files/
 .fake/
 
 # application
+dist
+!dist/*.zip
+data
 output
-.neo4j.json
