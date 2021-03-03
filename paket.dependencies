@@ -8,6 +8,7 @@ nuget MF.ConsoleApplication ~> 2.0
 nuget LibGit2Sharp
 nuget Newtonsoft.Json
 nuget libphonenumber-csharp ~> 8.1
+nuget Fake.IO.FileSystem
 
 // [ FAKE GROUP ]
 group Build

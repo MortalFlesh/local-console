@@ -21,6 +21,7 @@
     <Compile Include="src/Command/Types.fs" />
     <Compile Include="src/Command/RepositoryBackup.fs" />
     <Compile Include="src/Command/RepositoryCreate.fs" />
+    <Compile Include="src/Command/DirRemoveSubdirCommand.fs" />
     <Compile Include="src/Command/RepositoryBuildList.fs" />
     <Compile Include="src/Command/Normalize.fs" />
     <Compile Include="src/Command/PhoneCodeStats.fs" />

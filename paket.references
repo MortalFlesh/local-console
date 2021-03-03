@@ -4,3 +4,4 @@ MF.ConsoleApplication
 LibGit2Sharp
 Newtonsoft.Json
 libphonenumber-csharp
+Fake.IO.FileSystem

@@ -51,6 +51,24 @@ let main argv =
             Execute = RepositoryCreateCommand.execute
         }
 
+        command "dir:sub:remove" {
+            Description = "Remove a subdir(s) (and its content) found in the dir."
+            Help = commandHelp [
+                "The <c:dark-green>{{command.name}}</c> remove subdir(s) repositories:"
+                "        <c:dark-green>dotnet {{command.full_name}}</c> <c:dark-yellow>path-to-repositories/</c>"
+            ]
+            Arguments = [
+                Argument.required "dir" "Path to dir, where you want to find sub-dirs to remove."
+                Argument.requiredArray "dirsToRemove" "Name of the dir(s), which you want to remove (For example: <c:cyan>vendor, node_modules, ...</c>)."
+            ]
+            Options = [
+                Option.noValue "dry-run" None "Whether to just show a result as stdout."
+            ]
+            Initialize = None
+            Interact = None
+            Execute = DirRemoveSubdirCommand.execute
+        }
+
         command "repository:build:list" {
             Description = "List all repositories for the build.fsx version and type."
             Help = commandHelp [
