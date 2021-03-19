@@ -1,9 +1,14 @@
-framework: netcoreapp3.1
+framework: net5.0
 storage: none
 
 source https://api.nuget.org/v3/index.json
 nuget FSharp.Core
+nuget FSharp.Data
 nuget MF.ConsoleApplication ~> 2.0
+nuget LibGit2Sharp
+nuget Newtonsoft.Json
+nuget libphonenumber-csharp ~> 8.1
+nuget Fake.IO.FileSystem
 
 // [ FAKE GROUP ]
 group Build
@@ -11,6 +16,7 @@ group Build
     source https://api.nuget.org/v3/index.json
     nuget Fake.DotNet.Cli
     nuget Fake.IO.FileSystem
+    nuget Fake.IO.Zip
     nuget Fake.Core.Target
     nuget Fake.DotNet.AssemblyInfoFile
     nuget Fake.Core.ReleaseNotes

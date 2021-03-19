@@ -1,0 +1,38 @@
+[
+    {
+        "data": {
+            "type": "normalization",
+            "id": "ebd36e2d-0819-499c-ac37-95965956aa28",
+            "attributes": {
+                "contact": {
+                    "email": "bar",
+                    "phone": null
+                }
+            }
+        }
+    },
+    {
+        "data": {
+            "type": "normalization",
+            "id": "ebd36e2d-0819-499c-ac37-95965956aa28",
+            "attributes": {
+                "contact": {
+                    "email": null,
+                    "phone": "abc12345"
+                }
+            }
+        }
+    },
+    {
+        "data": {
+            "type": "normalization",
+            "id": "ebd36e2d-0819-499c-ac37-95965956aa28",
+            "attributes": {
+                "contact": {
+                    "email": "foo",
+                    "phone": "abc12345"
+                }
+            }
+        }
+    }
+]

@@ -1,2 +1,7 @@
 FSharp.Core
+FSharp.Data
 MF.ConsoleApplication
+LibGit2Sharp
+Newtonsoft.Json
+libphonenumber-csharp
+Fake.IO.FileSystem

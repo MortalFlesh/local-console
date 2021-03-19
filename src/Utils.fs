@@ -18,7 +18,7 @@ module FileSystem =
 
     let readLines (filePath: string) =
         File.ReadAllLines(filePath)
-        |> Seq.ofArray
+        |> Seq.toList
 
     let readContent (filePath: string) =
         File.ReadAllText(filePath)
@@ -26,6 +26,10 @@ module FileSystem =
     let tryReadContent (filePath: string) =
         if File.Exists filePath then File.ReadAllText(filePath) |> Some
         else None
+
+    let getAllDirs = function
+        | [] -> []
+        | directories -> directories |> List.collect (Directory.EnumerateDirectories >> List.ofSeq)
 
     let rec getAllFiles = function
         | [] -> []
@@ -63,6 +67,35 @@ module String =
     let append suffix string =
         sprintf "%s%s" string suffix
 
+    let trimEnd (char: char) (string: string) =
+        string.TrimEnd char
+
+    let contains (subString: string) (string: string) =
+        string.Contains(subString)
+
+    let startsWith (prefix: string) (string: string) =
+        string.StartsWith(prefix)
+
+[<RequireQualifiedAccess>]
+module Directory =
+    open System.IO
+
+    let ensure (path: string) =
+        if path |> Directory.Exists |> not then Directory.CreateDirectory(path) |> ignore
+
+[<RequireQualifiedAccess>]
+module Path =
+    open System.IO
+
+    let fileName = String.split "/" >> List.rev >> List.head
+
+    let dirName path =
+        let file = path |> fileName
+        path.Substring(0, path.Length - file.Length)
+
+    module Operators =
+        let (/) a b = Path.Combine(a, b)
+
 [<AutoOpen>]
 module Regexp =
     open System.Text.RegularExpressions
@@ -72,6 +105,31 @@ module Regexp =
         let m = Regex.Match(input, pattern)
         if m.Success then Some (List.tail [ for g in m.Groups -> g.Value ])
         else None
+
+[<RequireQualifiedAccess>]
+module Json =
+    open Newtonsoft.Json
+
+    let serialize obj =
+        JsonConvert.SerializeObject obj
+
+    let serializePretty obj =
+        JsonConvert.SerializeObject(obj, Formatting.Indented)
+
+[<RequireQualifiedAccess>]
+module List =
+    /// see https://stackoverflow.com/questions/32363848/fastest-way-to-reduce-a-list-based-on-another-list-using-f
+    let filterNotIn excluding list =
+        let toExclude = set excluding
+        list |> List.filter (toExclude.Contains >> not)
+
+    let filterNotInBy f excluding list =
+        let toExclude = set excluding
+        list |> List.filter (f >> toExclude.Contains >> not)
+
+    let filterInBy f including list =
+        let toInclude = set including
+        list |> List.filter (f >> toInclude.Contains)
 
 [<AutoOpen>]
 module Utils =
