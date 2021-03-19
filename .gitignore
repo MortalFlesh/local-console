@@ -28,6 +28,5 @@ paket-files/
 
 # application
 dist
-!dist/*.zip
 data
 output
