@@ -41,7 +41,7 @@ module RepositoryBuildListCommand =
     let private run (output: MF.ConsoleApplication.Output) filter paths =
         paths
         |> FileSystem.getAllFiles
-        |> List.filter (String.contains "build.fsx")
+        |> List.filter (fun file -> [ "build.fsx"; "Build.fs" ] |> List.exists (fun sub -> String.contains sub file))
         |> List.filter (String.contains "cache" >> not)
         //|> tee (List.length >> sprintf "Builds[%A]" >> output.Message)
         |> List.collect (fun path ->
