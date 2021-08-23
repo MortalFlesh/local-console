@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Update dependencies and build script
 
 ## 1.1.0 - 2021-08-04
 - List build version for both `build.fsx` and `Build.fs`

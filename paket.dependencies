@@ -1,9 +1,9 @@
+source https://api.nuget.org/v3/index.json
 framework: net5.0
 storage: none
 
-source https://api.nuget.org/v3/index.json
-nuget FSharp.Core
-nuget FSharp.Data
+nuget FSharp.Core ~> 5.0
+nuget FSharp.Data ~> 4.0
 nuget MF.ConsoleApplication ~> 2.0
 nuget LibGit2Sharp
 nuget Newtonsoft.Json
