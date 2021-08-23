@@ -4,6 +4,7 @@ namespace MF.LocalConsole
 module DirRemoveSubdirCommand =
     open System.IO
     open MF.ConsoleApplication
+    open MF.Utils
     open Fake.IO
     open Fake.IO.FileSystemOperators
     open Fake.IO.Globbing.Operators

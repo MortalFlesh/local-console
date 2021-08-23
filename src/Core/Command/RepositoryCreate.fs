@@ -5,9 +5,10 @@ module RepositoryCreateCommand =
     open System.IO
     open FSharp.Data
     open MF.ConsoleApplication
+    open MF.Utils
     open LibGit2Sharp
 
-    type private BackupSchema = JsonProvider<"src/schema/backup.json">
+    type private BackupSchema = JsonProvider<"schema/backup.json">
 
     type Mode =
         | CreateShell

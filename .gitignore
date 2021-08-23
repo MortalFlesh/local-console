@@ -30,3 +30,6 @@ paket-files/
 dist
 data
 output
+
+# credentials
+.doit.json

@@ -31,7 +31,7 @@ NUGET
     LibGit2Sharp (0.26.2)
       LibGit2Sharp.NativeBinaries (2.0.306)
     LibGit2Sharp.NativeBinaries (2.0.306)
-    libphonenumber-csharp (8.12.30)
+    libphonenumber-csharp (8.12.32)
       System.Collections.Immutable (>= 1.7.1)
     MF.ConsoleApplication (2.0)
       ConsoleStyle (>= 2.0)

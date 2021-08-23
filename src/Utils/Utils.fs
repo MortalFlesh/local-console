@@ -1,4 +1,4 @@
-namespace MF.LocalConsole
+namespace MF.Utils
 
 [<RequireQualifiedAccess>]
 module FileSystem =
@@ -136,3 +136,12 @@ module Utils =
     let tee f a =
         f a
         a
+
+[<RequireQualifiedAccess>]
+module Http =
+    let (|BadRequest|Unauthorized|NotFound|Unknown|) (e: exn) =
+        match e with
+        | :? System.Net.WebException as webException when webException.Message.Contains "(400) Bad Request" -> BadRequest
+        | :? System.Net.WebException as webException when webException.Message.Contains "(401) Unauthorized" -> Unauthorized
+        | :? System.Net.WebException as webException when webException.Message.Contains "(404) Not Found" -> NotFound
+        | e -> Unknown e

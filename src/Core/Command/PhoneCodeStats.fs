@@ -8,7 +8,7 @@ module PhoneCodeStatsCommand =
     open FSharp.Data
     open MF.ConsoleApplication
 
-    type PhoneCodes = JsonProvider<"src/schema/countryCodes.json", SampleIsList=true>
+    type PhoneCodes = JsonProvider<"schema/countryCodes.json", SampleIsList=true>
 
     let private (|Code|_|) codeLength numberLength: (string -> _) = function
         | phone when phone.StartsWith "+" && phone.Length = "+".Length + codeLength + numberLength -> phone.Substring(0, "+".Length + codeLength) |> Some
