@@ -61,7 +61,7 @@ dist/local-console list
 ---
 ### Development
 
-First run `dotnet build` or `dotnet watch run`
+First run `./build.sh` or `./build.sh -t watch`
 
 List commands
 ```sh
