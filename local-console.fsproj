@@ -13,20 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src/Utils.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="src/Console.fs" />
-    <Compile Include="src/Command/Types.fs" />
-    <Compile Include="src/Command/RepositoryBackup.fs" />
-    <Compile Include="src/Command/RepositoryCreate.fs" />
-    <Compile Include="src/Command/DirRemoveSubdirCommand.fs" />
-    <Compile Include="src/Command/RepositoryBuildList.fs" />
-    <Compile Include="src/Command/Normalize.fs" />
-    <Compile Include="src/Command/PhoneCodeStats.fs" />
-    <Compile Include="src/Command/ContactStats.fs" />
-    <Compile Include="src/Command/AzureFunc.fs" />
+    <ProjectReference Include="src/Core/Core.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

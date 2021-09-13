@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="AssemblyInfo.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../ErrorHandling/ErrorHandling.fsproj" />
+        <ProjectReference Include="../Utils/Utils.fsproj" />
+        <ProjectReference Include="../DoIt/DoIt.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="Console.fs" />
+
+        <Compile Include="Command/Types.fs" />
+        <Compile Include="Command/RepositoryBackup.fs" />
+        <Compile Include="Command/RepositoryCreate.fs" />
+        <Compile Include="Command/DirRemoveSubdirCommand.fs" />
+        <Compile Include="Command/RepositoryBuildList.fs" />
+        <Compile Include="Command/Normalize.fs" />
+        <Compile Include="Command/PhoneCodeStats.fs" />
+        <Compile Include="Command/ContactStats.fs" />
+        <Compile Include="Command/AzureFunc.fs" />
+        <Compile Include="Command/DoitBackup.fs" />
+    </ItemGroup>
+
+    <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

@@ -4,6 +4,7 @@ namespace MF.LocalConsole
 module RepositoryBuildListCommand =
     open MF.ConsoleApplication
     open MF.LocalConsole.Console
+    open MF.Utils
 
     type Filter = {
         BuildType: string option

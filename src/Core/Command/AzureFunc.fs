@@ -4,6 +4,7 @@ namespace MF.LocalConsole
 module AzureFuncCommand =
     open FSharp.Data
     open System.Collections.Concurrent
+    open MF.Utils
     open MF.ConsoleApplication
     open MF.LocalConsole.Console
 

@@ -4,6 +4,7 @@ namespace MF.LocalConsole
 module RepositoryBackupCommand =
     open System.IO
     open MF.ConsoleApplication
+    open MF.Utils
     open LibGit2Sharp
 
     type Output =

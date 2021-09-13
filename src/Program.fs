@@ -160,6 +160,16 @@ let main argv =
             Execute = ContactStatsCommand.execute
         }
 
+        command "doit:backup" {
+            Description = "Backup a doit.im data."
+            Help = None
+            Arguments = DoitBackupCommand.arguments
+            Options = DoitBackupCommand.options
+            Initialize = None
+            Interact = None
+            Execute = DoitBackupCommand.execute
+        }
+
         command "about" {
             Description = "Displays information about the current project."
             Help = None

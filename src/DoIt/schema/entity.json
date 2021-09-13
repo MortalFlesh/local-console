@@ -1,0 +1,43 @@
+[
+    {
+        "uuid": "uuid-value-as-string",
+        "id": "6125494753a122c97a0578ac",
+        "created": 1629833543350,
+        "updated": 1629842025728
+    },
+    {
+        "attribute": "plan",
+        "all_day": true,
+        "start_at": 1629759600000,
+        "end_at": 1629842025728,
+        "priority": 0,
+        "sent_at": 0,
+        "local_attachments": [],
+        "medias": [],
+        "pos": 280925866,
+        "estimated_time": 0,
+        "spent_time": 0,
+        "uuid": "uuid-value-as-string",
+        "title": "task",
+        "name": "task",
+        "usn": 91843,
+        "source": "iPhone",
+        "created": 1629833543350,
+        "updated": 1629842025728,
+        "deleted": 1629842025728,
+        "trashed": 1629842025728,
+        "completed": 1629842025679,
+        "archived": 1629842025728,
+        "hidden": 1629842025728,
+        "id": "6125494753a122c97a0578ac",
+        "notes": "...description...",
+        "project": "uuid-value-as-string",
+        "context": "uuid-value-as-string",
+        "type": "task",
+        "tags": [
+            "marvel",
+            "Disney+"
+        ],
+        "status": "active"
+    }
+]

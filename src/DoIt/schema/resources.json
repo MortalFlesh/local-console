@@ -1,0 +1,180 @@
+[
+    {
+        "resources": {
+            "goals": [],
+            "contexts": [
+                {
+                    "pos": 0,
+                    "uuid": "uuid-value-as-string",
+                    "name": "Home",
+                    "usn": 26,
+                    "created": 1424115224498,
+                    "updated": 1424115224504,
+                    "deleted": 0
+                },
+                {
+                    "pos": 1,
+                    "uuid": "uuid-value-as-string",
+                    "name": "Office",
+                    "usn": 27,
+                    "created": 1424115224505,
+                    "updated": 1424115224514,
+                    "deleted": 0
+                }
+            ],
+            "contacts": [],
+            "tags": [
+                {
+                    "uuid": "uuid-value-as-string",
+                    "name": "Academy",
+                    "usn": 2979,
+                    "created": 1428143800934,
+                    "updated": 1428143800939,
+                    "deleted": 0
+                },
+                {
+                    "uuid": "uuid-value-as-string",
+                    "name": "Education",
+                    "usn": 2980,
+                    "created": 1428143803511,
+                    "updated": 1428143803515,
+                    "deleted": 0
+                }
+            ],
+            "projects": [
+                {
+                    "status": "active",
+                    "active_notice": true,
+                    "start_at": 0,
+                    "end_at": 0,
+                    "local_attachments": [],
+                    "medias": [],
+                    "pos": 13506686,
+                    "group_by": "box",
+                    "uuid": "uuid-value-as-string",
+                    "name": "Project",
+                    "usn": 79261,
+                    "created": 1600977971976,
+                    "updated": 1600977971979,
+                    "deleted": 0,
+                    "trashed": 0,
+                    "completed": 0,
+                    "archived": 0
+                }
+            ],
+            "boxes": [
+                {
+                    "type": "inbox",
+                    "uuid": "uuid-value-as-string",
+                    "usn": 2,
+                    "created": 1424115224323,
+                    "updated": 1424115224327,
+                    "hidden": 0
+                },
+                {
+                    "type": "today",
+                    "uuid": "uuid-value-as-string",
+                    "usn": 241,
+                    "created": 1424287817568,
+                    "updated": 1424287817568,
+                    "hidden": 0
+                }
+            ],
+            "filters": [
+                {
+                    "pos": 0,
+                    "order_by": [
+                        [
+                            "start_at",
+                            "asc"
+                        ]
+                    ],
+                    "start_at": null,
+                    "end_at": null,
+                    "tags": [
+                        "NoveVS"
+                    ],
+                    "uuid": "uuid-value-as-string",
+                    "name": "Nove VS",
+                    "usn": 8907,
+                    "created": 1439224076648,
+                    "updated": 1439224076652,
+                    "deleted": 0,
+                    "hidden": 0
+                }
+            ],
+            "contact_groups": [],
+            "usn": 89038,
+            "max_usn": 91849,
+            "server_time": 1629869338562,
+            "user": {
+                "account": "foo",
+                "email": "foo@email.com",
+                "gender": "male",
+                "lower_account": "foo",
+                "lower_email": "foo@email.com",
+                "nickname": "foo",
+                "remind_daily_plan": false,
+                "status": "activated",
+                "agent": false,
+                "version": 4,
+                "uuid": "uuid-value-as-string",
+                "deleted": 0,
+                "updated": 1616746466432,
+                "created": 1424115224307,
+                "plan_review_remind_on_weekends": false,
+                "lunch_break_end_time": "13:30",
+                "lunch_break_start_time": "12:00",
+                "working_end_time": "18:00",
+                "working_start_time": "09:00",
+                "daily_review_times": [
+                    "18:00",
+                    "18:00",
+                    "18:00",
+                    "18:00",
+                    "18:00",
+                    "18:00",
+                    "18:00"
+                ],
+                "daily_planning_times": [
+                    "09:00",
+                    "09:00",
+                    "09:00",
+                    "09:00",
+                    "09:00",
+                    "09:00",
+                    "09:00"
+                ],
+                "birthday": 548325200000,
+                "google_calendar": {
+                    "calendar_id": null,
+                    "keep_complete": true,
+                    "token": null,
+                    "calendar": "group.calendar.google.com"
+                },
+                "date_format": "dd/mm/yyyy",
+                "time_format": 24,
+                "week_start": "Monday",
+                "email_to_task_address": "foo@doitim.in",
+                "language": "en",
+                "timezone": "(GMT+01:00) Praha",
+                "pay_end_at": 1648282466431,
+                "pay_start_at": 1616746466431,
+                "usn": 85785,
+                "pay_type": "yearly",
+                "password": "xyz",
+                "id": "1234"
+            },
+            "counts": [
+                {
+                    "inbox_total": 0,
+                    "today_due": 0,
+                    "today_total": 11,
+                    "waiting_due": 0,
+                    "waiting_total": 8
+                }
+            ]
+        },
+        "server_time": 1629869338602
+    }
+]

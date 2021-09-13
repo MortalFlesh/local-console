@@ -9,8 +9,9 @@ module NormalizeCommand =
     open System.IO
     open FSharp.Data
     open MF.ConsoleApplication
+    open MF.Utils
 
-    type NormalizationResponse = JsonProvider<"src/schema/response.json", SampleIsList=true>
+    type NormalizationResponse = JsonProvider<"schema/response.json", SampleIsList=true>
 
     let private allowedPhoneCodes = [
         "+420"  // czech republic must be first, so it would be used for code-less numbers
