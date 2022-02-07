@@ -240,6 +240,12 @@ module Async =
     /// Apply a monadic function to an Async value
     let bind f xA = async.Bind(xA,f)
 
+    let tee f xA = async {
+        let! a = xA
+        f a
+
+        return a
+    }
 
 //==============================================
 // AsyncResult
@@ -377,6 +383,18 @@ module AsyncResult =
     let ofEmptyTaskCatch (f: exn -> 'Error) (x: Task): AsyncResult<unit, 'Error> =
         x |> ofEmptyTask |> catch f
 
+    /// Lift an Option into an AsyncResult
+    let ofOption (onMissing: 'Error): Option<'Success> -> AsyncResult<'Success, 'Error> = function
+        | Some v -> ofSuccess v
+        | _ -> ofError onMissing
+
+    /// Lift an async Option into an AsyncResult
+    let ofAsyncOption (onMissing: 'Error) (aO: Async<Option<'Success>>): AsyncResult<'Success, 'Error> =
+        aO |> ofAsyncCatch (fun _ -> onMissing) |> bind (ofOption onMissing)
+
+    let ofBool (onFalse: 'Error) (b: bool): AsyncResult<unit, 'Error> =
+        if b then ofSuccess () else ofError onFalse
+
     /// Run asyncResults in Parallel, handles the errors and concats results
     let ofParallelAsyncResults<'Success, 'Error> (f: exn -> 'Error) (results: AsyncResult<'Success, 'Error> list): AsyncResult<'Success list, 'Error list> =
         results
@@ -472,6 +490,7 @@ module AsyncResult =
 
 /// The `asyncResult` computation expression is available globally without qualification
 /// See https://github.com/cmeeren/Cvdm.ErrorHandling/blob/master/src/Cvdm.ErrorHandling/AsyncResultBuilder.fs
+/// See https://github.com/demystifyfp/FsToolkit.ErrorHandling/blob/master/src/FsToolkit.ErrorHandling/AsyncResultCE.fs
 [<AutoOpen>]
 module AsyncResultComputationExpression =
     type AsyncResultBuilder() =
@@ -510,5 +529,41 @@ module AsyncResultComputationExpression =
             this.Using(sequence.GetEnumerator (), fun enum ->
                 this.While(enum.MoveNext,
                     this.Delay(fun () -> binder enum.Current)))
+
+    [<AutoOpen>]
+    module AsyncExtensions =
+
+        // Having Async<_> members as extensions gives them lower priority in
+        // overload resolution between Async<_> and Async<Result<_,_>>.
+        type AsyncResultBuilder with
+            member __.ReturnFrom (async: Async<'Success>) : AsyncResult<'Success, exn> =
+                async |> AsyncResult.ofAsyncCatch id
+
+            member __.ReturnFrom (task: Task<'Success>) : AsyncResult<'Success, exn> =
+                task |> AsyncResult.ofTaskCatch id
+
+            member __.ReturnFrom (task: Task) : AsyncResult<unit, exn> =
+                task |> AsyncResult.ofEmptyTaskCatch id
+
+            member this.Bind(async: Async<'SuccessA>, f: 'SuccessA -> AsyncResult<'SuccessB, exn>): AsyncResult<'SuccessB, exn> =
+                this.Bind (async |> AsyncResult.ofAsyncCatch id, f)
+
+            member this.Bind(task: Task<'SuccessA>, f: 'SuccessA -> AsyncResult<'SuccessB, exn>): AsyncResult<'SuccessB, exn> =
+                this.Bind (task |> AsyncResult.ofTaskCatch id, f)
+
+            member this.Bind(task: Task, f: unit -> AsyncResult<'Success, exn>): AsyncResult<'Success, exn> =
+                this.Bind (task |> AsyncResult.ofEmptyTaskCatch id, f)
+
+    [<AutoOpen>]
+    module ResultExtensions =
+
+        // Having Result<_> members as extensions gives them lower priority in
+        // overload resolution between Result<_> and Async<Result<_,_>>.
+        type AsyncResultBuilder with
+            member __.ReturnFrom (result: Result<'Success, 'Error>) : AsyncResult<'Success, 'Error> =
+                result |> AsyncResult.ofResult
+
+            member this.Bind(result: Result<'SuccessA, 'Error>, f: 'SuccessA -> AsyncResult<'SuccessB, 'Error>): AsyncResult<'SuccessB, 'Error> =
+                this.Bind (result |> AsyncResult.ofResult, f)
 
     let asyncResult = AsyncResultBuilder()

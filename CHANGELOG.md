@@ -4,6 +4,8 @@
 ## Unreleased
 - Update dependencies and build script
 - Add DoIt backup command
+- Use net6.0
+- Update error handling
 
 ## 1.1.0 - 2021-08-04
 - List build version for both `build.fsx` and `Build.fs`

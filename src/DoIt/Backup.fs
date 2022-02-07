@@ -44,7 +44,7 @@ module DoItBackup =
                     if output.IsVerbose() then output.Message $"<c:cyan>[DoIt][Backup]</c> Loading tasks from <c:yellow>{title}</c> ..."
 
                     let ignoredTasks = acc |> List.map Task.id |> Api.LoadedTasks
-                    let! tasks = loader ignoredTasks credentials
+                    let! (tasks: Task list) = loader ignoredTasks credentials
 
                     match progress with
                     | Active progressBar -> progressBar |> output.ProgressAdvance
@@ -85,7 +85,7 @@ module DoItBackup =
 
         if output.IsVerbose() then output.Message $"{prefix} Loading <c:yellow>resources</c> ..."
 
-        let! resources = Api.resources credentials <@> List.singleton
+        let! (resources: Resources) = Api.resources credentials <@> List.singleton
 
         if output.IsVeryVerbose() then
             output.Table ["Resource"; "Count"] [
@@ -108,7 +108,7 @@ module DoItBackup =
                         output.Message $"  │ └──> tasks <c:red>NOT loaded due to errors</c> <c:magenta>{errors.Length}</c>"
             }
 
-        let! tasks =
+        let! (tasks: Task list) =
             loadTasks output credentials [
                 "projects", load resources.Projects (showInfo Project.name) Project.id Api.projectTasks
                 "contexts", load resources.Contexts (showInfo Context.name) Context.id Api.contextTasks

@@ -166,7 +166,7 @@ module Api =
             | string -> Some string
 
         let entity defaultType loadSubtasks loadComments value = asyncResult {
-            let! entity =
+            let! (entity: EntitySchema.Root) =
                 try EntitySchema.Parse value |> AsyncResult.ofSuccess
                 with e -> AsyncResult.ofError e
 
