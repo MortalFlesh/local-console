@@ -3,6 +3,8 @@ open System.IO
 open MF.ConsoleApplication
 open MF.LocalConsole
 open MF.LocalConsole.Console
+open MF.Calendar
+open MF.Monad
 
 [<EntryPoint>]
 let main argv =
@@ -10,6 +12,20 @@ let main argv =
         title AssemblyVersionInformation.AssemblyProduct
         info ApplicationInfo.MainTitle
         version AssemblyVersionInformation.AssemblyVersion
+
+        command "monad:play" {
+            Description = "Just play with monads."
+            Help = None
+            Arguments = []
+            Options = []
+            Initialize = None
+            Interact = None
+            Execute = fun (input, output) ->
+                Writer.example (input, output)
+
+                output.Success "Done"
+                ExitCode.Success
+        }
 
         command "repository:backup" {
             Description = "Backup repositories - command will save all repository remote urls to the output file."
