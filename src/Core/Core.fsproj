@@ -28,6 +28,7 @@
         <Compile Include="Command/ContactStats.fs" />
         <Compile Include="Command/AzureFunc.fs" />
         <Compile Include="Command/DoitBackup.fs" />
+        <Compile Include="Command/ParseGrafanaMetrics.fs" />
     </ItemGroup>
 
     <Import Project="..\..\.paket\Paket.Restore.targets" />

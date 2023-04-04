@@ -1,0 +1,88 @@
+[
+    {
+        "results": {
+            "E": {
+                "status": 200,
+                "frames": [
+                    {
+                        "schema": {
+                            "refId": "E",
+                            "meta": {
+                                "type": "timeseries-multi",
+                                "custom": {
+                                    "resultType": "matrix"
+                                },
+                                "executedQueryString": "Expr: istio_requests_total\nStep: 30m0s"
+                            },
+                            "fields": [
+                                {
+                                    "name": "Time",
+                                    "type": "time",
+                                    "typeInfo": {
+                                        "frame": "time.Time"
+                                    },
+                                    "config": {
+                                        "interval": 1800000
+                                    }
+                                },
+                                {
+                                    "name": "Value",
+                                    "type": "number",
+                                    "typeInfo": {
+                                        "frame": "float64"
+                                    },
+                                    "labels": {
+                                        "__name__": "istio_requests_total",
+                                        "cluster": "k8sarch-61-prod-services",
+                                        "connection_security_policy": "mutual_tls",
+                                        "container": "istio-proxy",
+                                        "destination_app": "unknown",
+                                        "destination_canonical_revision": "101",
+                                        "destination_canonical_service": "gis-tileserver",
+                                        "destination_cluster": "k8sarch-61-prod-services",
+                                        "destination_principal": "spiffe://cluster.local/ns/gis/sa/default",
+                                        "destination_service": "tileserver-prodeurope-stable.gis.svc.cluster.local",
+                                        "destination_service_name": "tileserver-prodeurope-stable",
+                                        "destination_service_namespace": "gis",
+                                        "destination_version": "unknown",
+                                        "destination_workload": "tileserver-prodeurope-stable",
+                                        "destination_workload_namespace": "gis",
+                                        "instance": "10.233.97.63:15020",
+                                        "job": "infra/istio-proxy-monitor",
+                                        "namespace": "gis",
+                                        "pod": "tileserver-prodeurope-stable-0",
+                                        "pod_name": "tileserver-prodeurope-stable-0",
+                                        "prometheus": "infra/prometheus-stack-kube-prom-prometheus",
+                                        "prometheus_replica": "prometheus-prometheus-stack-kube-prom-prometheus-0",
+                                        "reporter": "destination",
+                                        "request_protocol": "http",
+                                        "response_code": "0",
+                                        "response_flags": "unknown",
+                                        "source_app": "unknown",
+                                        "source_canonical_revision": "106",
+                                        "source_canonical_service": "gis-krakend",
+                                        "source_cluster": "unknown"
+                                    }
+                                }
+                            ]
+                        },
+                        "data": {
+                            "values": [
+                                [
+                                    1679985000000,
+                                    1679986800000,
+                                    1680593400000
+                                ],
+                                [
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

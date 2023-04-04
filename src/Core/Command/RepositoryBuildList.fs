@@ -72,17 +72,17 @@ module RepositoryBuildListCommand =
 
         ()
 
-    let execute: Execute = fun (input, output) ->
+    let execute = Execute <| fun (input, output) ->
         let paths = input |> Input.getRepositories
 
         let filter: Filter = {
             BuildType =
                 match input with
-                | Input.OptionOptionalValue "type" buildType -> Some buildType
+                | Input.Option.OptionalValue "type" buildType -> Some buildType
                 | _ -> None
             Version =
                 match input with
-                | Input.OptionOptionalValue "build-version" version -> Some version
+                | Input.Option.OptionalValue "build-version" version -> Some version
                 | _ -> None
         }
 

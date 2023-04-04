@@ -25,9 +25,9 @@ module PhoneCodeStatsCommand =
             )
         | _ -> None
 
-    let execute (input, output) =
-        let fileName = input |> Input.getArgumentValueAsString "file-name" |> Option.defaultValue "-"
-        let outputDir = input |> Input.getOptionValueAsString "output"
+    let execute = Execute <| fun (input, output) ->
+        let fileName = input |> Input.Argument.asString "file-name" |> Option.defaultValue "-"
+        let outputDir = input |> Input.Option.asString "output"
 
         output.SubTitle "Starting ..."
         let lines = File.ReadAllLines(fileName) |> Seq.ofArray

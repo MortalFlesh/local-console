@@ -91,26 +91,26 @@ module DoitBackupCommand =
     let arguments = []
 
     let options = [
-        Option.required "credentials" (Some "c") "Name of the file with credentials for doit service." (Some ".doit.json")
-        Option.required "output" (Some "o") "A path to file to output a backup." None
+        Option.required "credentials" (Some "c") "Name of the file with credentials for doit service." ".doit.json"
+        Option.optional "output" (Some "o") "A path to file to output a backup." None
         Option.noValue "force" (Some "f") "Whether to overwrite an existing backup, if it exists."
         Option.noValue "static" None "Whether to use a static backup - it is just for a debugging purposes."
     ]
 
-    let execute: Execute = fun (input, output) ->
-        let credentials = input |> Input.getOptionValue "credentials"
+    let execute= Execute <| fun (input, output) ->
+        let credentials = input |> Input.Option.value "credentials"
         let outputFile =
             match input with
-            | Input.OptionOptionalValue "output" file -> Some file
+            | Input.Option.OptionalValue "output" file -> Some file
             | _ -> None
         let useStatic =
             match input with
-            | Input.HasOption "static" _ -> true
+            | Input.Option.Has "static" _ -> true
             | _ -> false
 
         run output useStatic credentials (
             match outputFile, input with
-            | Some file, Input.HasOption "force" _ -> Output.File file
+            | Some file, Input.Option.Has "force" _ -> Output.File file
             | Some file, _ when file |> File.Exists -> failwithf "File %A already exists." file
             | Some file, _ -> Output.File file
             | _ -> Output.Stdout output

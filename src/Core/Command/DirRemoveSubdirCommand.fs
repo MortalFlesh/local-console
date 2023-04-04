@@ -69,13 +69,13 @@ module DirRemoveSubdirCommand =
         |> outputStep "Delete dirs"
         |> List.iter deleteDir
 
-    let execute: Execute = fun (input, output) ->
-        let dir = input |> Input.getArgumentValue "dir"
-        let dirsToRemove = input |> Input.getArgumentValueAsList "dirsToRemove"
+    let execute = Execute <| fun (input, output) ->
+        let dir = input |> Input.Argument.value "dir"
+        let dirsToRemove = input |> Input.Argument.asList "dirsToRemove"
 
         let mode =
             match input with
-            | Input.HasOption "dry-run" _ -> DryRun
+            | Input.Option.Has "dry-run" _ -> DryRun
             | _ -> RemoveDirectories
 
         dir
