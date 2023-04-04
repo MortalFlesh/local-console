@@ -3,7 +3,6 @@ open System.IO
 open MF.ConsoleApplication
 open MF.LocalConsole
 open MF.LocalConsole.Console
-open MF.Calendar
 open MF.Monad
 
 [<EntryPoint>]
@@ -20,11 +19,7 @@ let main argv =
             Options = []
             Initialize = None
             Interact = None
-            Execute = fun (input, output) ->
-                Writer.example (input, output)
-
-                output.Success "Done"
-                ExitCode.Success
+            Execute = Writer.example
         }
 
         command "repository:backup" {
@@ -95,8 +90,8 @@ let main argv =
                 Argument.repositories
             ]
             Options = [
-                Option.required "type" (Some "t") "Show only builds of this type." None
-                Option.required "build-version" (Some "b") "Show only builds of this version." None
+                Option.optional "type" (Some "t") "Show only builds of this type." None
+                Option.optional "build-version" (Some "b") "Show only builds of this version." None
             ]
             Initialize = None
             Interact = None
@@ -115,7 +110,7 @@ let main argv =
                 Argument.required "call-count" "Count of calls to be made."
             ]
             Options = [
-                Option.required "code" (Some "c") "Code to your function." None
+                Option.optional "code" (Some "c") "Code to your function." None
             ]
             Initialize = None
             Interact = None
@@ -130,7 +125,7 @@ let main argv =
                 Argument.required "input-type" "Type of the input data (<c:blue>email</c>, <c:blue>phone</c>)."
             ]
             Options = [
-                Option.required "code" (Some "c") "Code to your function." None
+                Option.optional "code" (Some "c") "Code to your function." None
                 Option.optional "output" (Some "o") "Output dir." None
             ]
             Initialize = None
@@ -186,38 +181,14 @@ let main argv =
             Execute = DoitBackupCommand.execute
         }
 
-        command "about" {
-            Description = "Displays information about the current project."
+        command "grafana:parse:metrics" {
+            Description = "Parse metrics from a grafana query saved in the json file."
             Help = None
-            Arguments = []
-            Options = []
+            Arguments = ParseGrafanaMetricsCommand.arguments
+            Options = ParseGrafanaMetricsCommand.options
             Initialize = None
             Interact = None
-            Execute = fun (_input, output) ->
-                let ``---`` = [ "------------------"; "----------------------------------------------------------------------------------------------" ]
-
-                output.Table [ AssemblyVersionInformation.AssemblyProduct ] [
-                    [ "Description"; AssemblyVersionInformation.AssemblyDescription ]
-                    [ "Version"; AssemblyVersionInformation.AssemblyVersion ]
-
-                    ``---``
-                    [ "Environment" ]
-                    ``---``
-                    [ ".NET Core"; Environment.Version |> sprintf "%A" ]
-                    [ "Command Line"; Environment.CommandLine ]
-                    [ "Current Directory"; Environment.CurrentDirectory ]
-                    [ "Machine Name"; Environment.MachineName ]
-                    [ "OS Version"; Environment.OSVersion |> sprintf "%A" ]
-                    [ "Processor Count"; Environment.ProcessorCount |> sprintf "%A" ]
-
-                    ``---``
-                    [ "Git" ]
-                    ``---``
-                    [ "Branch"; AssemblyVersionInformation.AssemblyMetadata_gitbranch ]
-                    [ "Commit"; AssemblyVersionInformation.AssemblyMetadata_gitcommit ]
-                ]
-
-                ExitCode.Success
+            Execute = ParseGrafanaMetricsCommand.execute
         }
     }
     |> run argv

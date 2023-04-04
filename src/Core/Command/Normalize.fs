@@ -96,7 +96,7 @@ module NormalizeCommand =
                 phone
             |> TextRequest
 
-    let private normalizeLine output baseUrl inputType progress results (line: string) = async {
+    let private normalizeLine (output: MF.ConsoleApplication.Output) baseUrl inputType progress results (line: string) = async {
         let line = line.Trim '"'
 
         let! rawResponse =
@@ -195,7 +195,7 @@ module NormalizeCommand =
                 [ string line; "<c:red>Error</c>" ]
     }
 
-    let private debugResults output results =
+    let private debugResults (output: MF.ConsoleApplication.Output) results =
         output.Title "Real responses"
 
         output.SubTitle "Ok"
@@ -272,7 +272,7 @@ module NormalizeCommand =
             results.Errors.Clear()
         )
 
-    let private normalizeLines output baseUrl inputType outputDir lines =
+    let private normalizeLines (output: MF.ConsoleApplication.Output) baseUrl inputType outputDir lines =
         let errors = ResultCollection()
         let lineCount = lines |> Seq.length
         let progress = lineCount |> output.ProgressStart "Function calls"
@@ -285,14 +285,14 @@ module NormalizeCommand =
 
         errors
 
-    let execute ((input, output): MF.ConsoleApplication.IO) =
-        let fileName = input |> Input.getArgumentValueAsString "file-name" |> Option.defaultValue "-"
-        let inputType = input |> Input.getArgumentValueAsString "input-type" |> Option.defaultValue ""
+    let execute = Execute <| fun (input, output) ->
+        let fileName = input |> Input.Argument.asString "file-name" |> Option.defaultValue "-"
+        let inputType = input |> Input.Argument.asString "input-type" |> Option.defaultValue ""
 
         let appName = "fun-prod-web"
         let functionName = "HttpTrigger"
-        let code = input |> Input.getOptionValueAsString "code" |> Option.defaultValue "-"
-        let outputDir = input |> Input.getOptionValueAsString "output"
+        let code = input |> Input.Option.asString "code" |> Option.defaultValue "-"
+        let outputDir = input |> Input.Option.asString "output"
         let baseUrl = sprintf "https://%s.azurewebsites.net/api/%s?code=%s" appName functionName code
 
         output.Table ["app"; "func"; "code"] [
@@ -320,8 +320,8 @@ module NormalizeCommand =
         output.Success "Done"
         ExitCode.Success
 
-    let executePhone: Execute = fun (input, output) ->
-        let phone = input |> Input.getArgumentValueAsString "phone" |> Option.defaultValue ""
+    let executePhone = Execute <| fun (input, output) ->
+        let phone = input |> Input.Argument.asString "phone" |> Option.defaultValue ""
 
         let tryParsePhone code phone =
             let phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance()

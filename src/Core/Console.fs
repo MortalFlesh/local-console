@@ -18,4 +18,4 @@ module Console =
 
     [<RequireQualifiedAccess>]
     module Input =
-        let getRepositories = Input.getArgumentValueAsList "repositories"
+        let getRepositories = Input.Argument.asList "repositories"

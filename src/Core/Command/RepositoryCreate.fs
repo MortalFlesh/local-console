@@ -24,25 +24,25 @@ module RepositoryCreateCommand =
     let private addShellCommand command =
         shellLines <- command :: shellLines
 
-    let private createRepository output mode repositoryName =
+    let private createRepository (output: MF.ConsoleApplication.Output) mode repositoryName =
         match mode with
         | CreateShell -> sprintf "echo \"Create %s ...\"" repositoryName |> addShellCommand
         | DryRun
         | CreateRepositories -> output.Section <| sprintf "Create %s" repositoryName
 
-    let private skipRepository output mode reason =
+    let private skipRepository (output: MF.ConsoleApplication.Output) mode reason =
         match mode with
         | CreateShell -> sprintf "echo \" - skipped for %s ...\"" reason |> addShellCommand
         | DryRun
         | CreateRepositories -> output.Message <| sprintf "<c:yellow> - skipped for %s</c>" reason
 
-    let private ensureDir output mode dir =
+    let private ensureDir (output: MF.ConsoleApplication.Output) mode dir =
         match mode with
         | CreateShell -> sprintf "mkdir -p %A" dir |> addShellCommand
         | DryRun -> output.Message <| sprintf " - <c:cyan>Directory.ensure</c> %A -> %s" dir (if Directory.Exists dir then "<c:gray>already there</c>" else "<c:yellow>create</c>")
         | CreateRepositories -> Directory.ensure dir
 
-    let private copyFile output mode repositoryName source target =
+    let private copyFile (output: MF.ConsoleApplication.Output) mode repositoryName source target =
         match mode with
         | CreateShell ->
             if File.Exists source then sprintf "cp -R %A %A" source target |> addShellCommand
@@ -54,7 +54,7 @@ module RepositoryCreateCommand =
 
     open Path.Operators
 
-    let private cloneRepository output mode repositoryName url targetDir =
+    let private cloneRepository (output: MF.ConsoleApplication.Output) mode repositoryName url targetDir =
         match mode with
         | CreateShell -> sprintf "git clone %s %A" url (targetDir / repositoryName) |> addShellCommand
         | DryRun -> output.Message <| sprintf " - <c:cyan>Repository.Clone</c> %A -> %A" url targetDir
@@ -145,18 +145,18 @@ module RepositoryCreateCommand =
         |> List.sort
         |> output.Options "Repository with errors:"
 
-    let execute: Execute = fun (input, output) ->
-        let backupDir = input |> Input.getArgumentValue "backup"
+    let execute = Execute <| fun (input, output) ->
+        let backupDir = input |> Input.Argument.value "backup"
 
         let mode =
             match input with
-            | Input.HasOption "dry-run" _ -> DryRun
-            | Input.HasOption "use-shell" _ -> CreateShell
+            | Input.Option.Has "dry-run" _ -> DryRun
+            | Input.Option.Has "use-shell" _ -> CreateShell
             | _ -> CreateRepositories
 
         let ignoredRemotes =
             match input with
-            | Input.OptionValue "ignore-remote" ignored -> ignored |> FileSystem.readLines
+            | Input.Option.Value "ignore-remote" ignored -> ignored |> FileSystem.readLines
             | _ -> []
 
         backupDir

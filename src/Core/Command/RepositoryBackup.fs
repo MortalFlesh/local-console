@@ -199,27 +199,27 @@ module RepositoryBackupCommand =
 
     open MF.LocalConsole.Console
 
-    let execute: Execute = fun (input, output) ->
+    let execute = Execute <| fun (input, output) ->
         let paths = input |> Input.getRepositories
         let outputFile =
             match input with
-            | Input.OptionOptionalValue "output" file -> Some file
+            | Input.Option.OptionalValue "output" file -> Some file
             | _ -> None
 
         let completeRepository =
             match input with
-            | Input.HasOption "only-complete" _ -> CompleteRepository.OnlyComlete
-            | Input.HasOption "only-incomplete" _ -> CompleteRepository.OnlyIncomplete
+            | Input.Option.Has "only-complete" _ -> CompleteRepository.OnlyComlete
+            | Input.Option.Has "only-incomplete" _ -> CompleteRepository.OnlyIncomplete
             | _ -> CompleteRepository.All
 
         let ignoredFiles =
             match input with
-            | Input.OptionValue "ignore-file" ignored -> ignored |> FileSystem.readLines
+            | Input.Option.Value "ignore-file" ignored -> ignored |> FileSystem.readLines
             | _ -> []
 
         let ignoredRepositories =
             match input with
-            | Input.OptionValue "ignore-repo" ignored -> ignored |> FileSystem.readLines
+            | Input.Option.Value "ignore-repo" ignored -> ignored |> FileSystem.readLines
             | _ -> []
 
         paths

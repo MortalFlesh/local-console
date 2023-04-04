@@ -6,6 +6,8 @@
 - Add DoIt backup command
 - Use net6.0
 - Update error handling
+- Update console-application
+- Add `ParseGrafanaMetrics` command
 
 ## 1.1.0 - 2021-08-04
 - List build version for both `build.fsx` and `Build.fs`

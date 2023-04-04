@@ -10,13 +10,14 @@ type DoItBackup = {
 [<RequireQualifiedAccess>]
 module DoItBackup =
     open System
+    open MF.ConsoleStyle
     open MF.Utils
     open MF.ErrorHandling
     open MF.ErrorHandling.AsyncResult.Operators
 
     [<AutoOpen>]
     module private Loader =
-        type private Progress = // todo - remove when ConsoleStyle 3.0.0 is out
+        (* type private Progress = // todo - remove when ConsoleStyle 3.0.0 is out
             | Active of MF.ConsoleApplication.ProgressBar
             | Inactive
 
@@ -27,7 +28,7 @@ module DoItBackup =
                     | _ -> ()
 
                 interface IDisposable with
-                    member this.Dispose() = this.Finish()
+                    member this.Dispose() = this.Finish() *)
 
         type ShowLoaderInfo<'Parent> = {
             Info: 'Parent -> unit
@@ -46,10 +47,12 @@ module DoItBackup =
                     let ignoredTasks = acc |> List.map Task.id |> Api.LoadedTasks
                     let! (tasks: Task list) = loader ignoredTasks credentials
 
-                    match progress with
-                    | Active progressBar -> progressBar |> output.ProgressAdvance
+                    progress |> output.ProgressAdvance
+
+                    (* match progress with
+                    | ProgressBar.Active progressBar -> progressBar |> output.ProgressAdvance
                     | Inactive when output.IsVeryVerbose() -> output.Message $"  └─> <c:magenta>{tasks.Length}</c> tasks loaded"
-                    | Inactive -> ()
+                    | Inactive -> () *)
 
                     return! rest |> load progress (acc @ tasks |> List.distinctBy Task.id)
                 }
@@ -58,9 +61,9 @@ module DoItBackup =
             | [] -> AsyncResult.ofSuccess []
             | loaders ->
                 if output.IsVerbose() then
-                    loaders |> load Inactive []
+                    loaders |> load ProgressBar.inactive []
                 else
-                    use progress = output.ProgressStart "Load tasks" loaders.Length |> Active
+                    use progress = output.ProgressStart "Load tasks" loaders.Length
                     loaders |> load progress []
 
         /// Create an api loader for a parent container (project, context, ...) of tasks
@@ -209,7 +212,7 @@ module DoItBackup =
                     Uuid = project1
                     Name = "Project"
                     Description = None
-                    Status = Active
+                    Status = Status.Active
                     Created = now
                     Updated = now
                 }

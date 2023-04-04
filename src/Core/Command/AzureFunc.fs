@@ -5,14 +5,15 @@ module AzureFuncCommand =
     open FSharp.Data
     open System.Collections.Concurrent
     open MF.Utils
+    open MF.ErrorHandling
     open MF.ConsoleApplication
     open MF.LocalConsole.Console
 
-    let execute: Execute = fun (input, output) ->
-        let appName = input |> Input.getArgumentValueAsString "app-name" |> Option.defaultValue "-"
-        let functionName = input |> Input.getArgumentValueAsString "function-name" |> Option.defaultValue "-"
-        let callCount = input |> Input.getArgumentValueAsString "call-count" |> Option.defaultValue "0" |> int
-        let code = input |> Input.getOptionValueAsString "code" |> Option.defaultValue "-"
+    let execute = ExecuteAsyncResult <| fun (input, output) -> asyncResult {
+        let appName = input |> Input.Argument.asString "app-name" |> Option.defaultValue "-"
+        let functionName = input |> Input.Argument.asString "function-name" |> Option.defaultValue "-"
+        let callCount = input |> Input.Argument.asString "call-count" |> Option.defaultValue "0" |> int
+        let code = input |> Input.Option.asString "code" |> Option.defaultValue "-"
 
         output.Table ["app"; "func"; "calls"; "code"] [
             [ appName; functionName; string callCount; code ]
@@ -81,4 +82,5 @@ module AzureFuncCommand =
             |> output.Table [ "Request"; "Response" ]
 
         output.Success "Done"
-        ExitCode.Success
+        return ExitCode.Success
+    }

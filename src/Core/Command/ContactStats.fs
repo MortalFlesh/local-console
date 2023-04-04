@@ -8,8 +8,8 @@ module ContactStatsCommand =
     open FSharp.Data
     open MF.ConsoleApplication
 
-    let execute (input, output) =
-        let fileName = input |> Input.getArgumentValueAsString "file-name" |> Option.defaultValue "-"
+    let execute = Execute <| fun (input, output) ->
+        let fileName = input |> Input.Argument.asString "file-name" |> Option.defaultValue "-"
 
         output.SubTitle "Starting ..."
         let lines = File.ReadAllLines(fileName) |> Seq.ofArray
