@@ -2,6 +2,7 @@
 
 <!-- There is always Unreleased section on the top. Subsections (Add, Changed, Fix, Removed) should be Add as needed. -->
 ## Unreleased
+- Use net9.0
 
 ## 1.4.0 - 2024-02-06
 - Use net8.0

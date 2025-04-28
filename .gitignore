@@ -22,6 +22,7 @@ AssemblyInfo.fs
 # Paket dependency manager
 .paket/paket.exe
 paket-files/
+.paket
 
 # FAKE - F# Make
 .fake/

@@ -190,5 +190,17 @@ let main argv =
             Interact = None
             Execute = ParseGrafanaMetricsCommand.execute
         }
+
+        command "stream:test" {
+            Description = "Stream playground command."
+            Help = None
+            Arguments = [
+                Argument.optionalArray "file-name" "Name of the file." None
+            ]
+            Options = []
+            Initialize = None
+            Interact = None
+            Execute = StreamTestCommand.execute
+        }
     }
     |> run argv

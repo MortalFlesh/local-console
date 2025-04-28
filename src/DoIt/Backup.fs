@@ -238,6 +238,6 @@ module DoItBackup =
     open System.IO
 
     let saveToFile serialize file (backup: DoItBackup) =
-        let serialized = backup |> serialize
+        let (serialized: string) = backup |> serialize
 
         File.WriteAllText (file, serialized)
