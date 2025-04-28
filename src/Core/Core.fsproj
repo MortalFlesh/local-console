@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,6 +29,7 @@
         <Compile Include="Command/AzureFunc.fs" />
         <Compile Include="Command/DoitBackup.fs" />
         <Compile Include="Command/ParseGrafanaMetrics.fs" />
+        <Compile Include="Command/StreamTestCommand.fs" />
     </ItemGroup>
 
     <Import Project="..\..\.paket\Paket.Restore.targets" />

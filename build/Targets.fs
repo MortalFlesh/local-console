@@ -126,6 +126,7 @@ module internal Targets =
             ++ "./**/.ionide"
             -- "./bin/console"
             -- "./build/**"
+            -- "./data/**"
             |> Shell.cleanDirs
         )
 

@@ -2,6 +2,7 @@ namespace MF.LocalConsole
 
 [<RequireQualifiedAccess>]
 module RepositoryBackupCommand =
+    open System
     open System.IO
     open MF.ConsoleApplication
     open MF.Utils
@@ -211,6 +212,15 @@ module RepositoryBackupCommand =
             | Input.Option.Has "only-complete" _ -> CompleteRepository.OnlyComlete
             | Input.Option.Has "only-incomplete" _ -> CompleteRepository.OnlyIncomplete
             | _ -> CompleteRepository.All
+
+        let startDate =
+            match input with
+            | Input.Option.Value "from" fromDate -> DateTime.Parse $"{fromDate} 00:00"
+            | _ -> failwith "Start time is not set."
+        let endDate =
+            match input with
+            | Input.Option.Value "to" toDate -> DateTime.Parse $"{toDate} 23:00"
+            | _ -> failwith "End time is not set."
 
         let ignoredFiles =
             match input with
