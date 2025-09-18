@@ -1,0 +1,282 @@
+[
+    {
+        "id": 1107296263,
+        "itemsCount": 10,
+        "priceComposition": {
+            "total": {
+                "amount": 989.49,
+                "currency": "CZK"
+            },
+            "goods": {
+                "amount": 989.49,
+                "currency": "CZK"
+            },
+            "delivery": {
+                "amount": 0.00,
+                "currency": "CZK"
+            },
+            "creditsUsed": {
+                "amount": 0.00,
+                "currency": "CZK"
+            },
+            "courierTip": {
+                "amount": 0.00,
+                "currency": "CZK"
+            },
+            "fines": {
+                "amount": 0.00,
+                "currency": "CZK"
+            },
+            "reusableBagsDeposit": {
+                "amount": 0.00,
+                "currency": "CZK"
+            }
+        },
+        "orderTime": "2025-08-11T23:52:21.000+0200",
+        "deliveryType": "COURIER",
+        "deliverySlot": {
+            "id": 327830,
+            "type": "VIRTUAL",
+            "since": "2025-08-12T09:00:01.000+0200",
+            "till": "2025-08-12T10:00:00.000+0200"
+        },
+        "state": "DELIVERED",
+        "payment": 1,
+        "address": "Černého 834/32, 63500, Brno, Patro: 6",
+        "deliveryNote": "",
+        "documents": [
+            {
+                "type": "ORDER_RECEIPT",
+                "title": "Účtenka",
+                "link": "https://www.rohlik.cz/services/frontend-service/files/receipt/1107296263"
+            },
+            {
+                "type": "ORDER_INVOICE",
+                "title": "Daňový doklad",
+                "link": "https://www.rohlik.cz/services/frontend-service/files/invoice/1107296263?old=1"
+            },
+            {
+                "type": "TERMS_AND_CONDITIONS",
+                "title": "Všeobecné obchodní podmínky",
+                "link": "https://cdn.rohlik.cz/files/vop/VOP_VP_2025_02-26_CZ.pdf"
+            }
+        ],
+        "availableActions": [
+            "ONLINE_COMPLAINT",
+            "REPEAT_ORDER"
+        ],
+        "payByLink": null,
+        "items": [
+            {
+                "name": "Mlékárna Kunín Smetana ke šlehání 31%",
+                "unit": "kg",
+                "textualAmount": "200 g",
+                "amount": 1,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/711751/711751-1753695193908.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 31.90,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 31.90,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 711751
+            },
+            {
+                "name": "Madeta Jihočeské mléko trvanlivé plnotučné 3,5%",
+                "unit": "l",
+                "textualAmount": "1 l",
+                "amount": 1,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/712065/712065-1504611973.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 27.90,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 27.90,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 712065
+            },
+            {
+                "name": "Madeta Jihočeské trvanlivé polotučné mléko 1,5%",
+                "unit": "l",
+                "textualAmount": "1 l",
+                "amount": 1,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/712181/712181-1695364029009.jpeg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 24.90,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 24.90,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 712181
+            },
+            {
+                "name": "Lagris Rýže basmati",
+                "unit": "kg",
+                "textualAmount": "500 g",
+                "amount": 2,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/1287327/1287327-1550831530.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 119.80,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 59.90,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 1287327
+            },
+            {
+                "name": "Dove Hedvábné Tekuté mýdlo náhradní náplň",
+                "unit": "l",
+                "textualAmount": "500 ml",
+                "amount": 2,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/1291541/1291541-1742213355857.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 229.80,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 114.90,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 1291541
+            },
+            {
+                "name": "Hellmann's Grilovací omáčka k masu Samba",
+                "unit": "l",
+                "textualAmount": "250 ml",
+                "amount": 1,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/1313123/1313123-1713533156339.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 69.90,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 69.90,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 1313123
+            },
+            {
+                "name": "Cibule červená 1 ks, volná",
+                "unit": "kg",
+                "textualAmount": "100 g",
+                "amount": 3,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/1296263/1296263-1496300156.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 14.36,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 4.79,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 1349781
+            },
+            {
+                "name": "Rohlik.cz Krůtí prsní šunka nejvyšší jakosti",
+                "unit": "kg",
+                "textualAmount": "160,1 g",
+                "amount": 1,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/1388069/1388069-1603107967.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 64.11,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 64.11,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 1388069
+            },
+            {
+                "name": "Agro Jesenice Lesní směs",
+                "unit": "kg",
+                "textualAmount": "200 g",
+                "amount": 10,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/1419923/1419923-1647198166174.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 299.00,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 29.90,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 1419923
+            },
+            {
+                "name": "Miil Máslo 82%",
+                "unit": "kg",
+                "textualAmount": "250 g",
+                "amount": 2,
+                "images": [
+                    "https://cdn.rohlik.cz/images/grocery/products/1462148/1462148-1722952177279.jpg"
+                ],
+                "priceComposition": {
+                    "total": {
+                        "amount": 107.82,
+                        "currency": "CZK"
+                    },
+                    "unit": {
+                        "amount": 53.91,
+                        "currency": "CZK"
+                    }
+                },
+                "compensated": false,
+                "id": 1462148
+            }
+        ]
+    }
+]

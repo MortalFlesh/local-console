@@ -13,6 +13,7 @@
         <ProjectReference Include="../ErrorHandling/ErrorHandling.fsproj" />
         <ProjectReference Include="../Utils/Utils.fsproj" />
         <ProjectReference Include="../DoIt/DoIt.fsproj" />
+        <ProjectReference Include="../Rohlik/Rohlik.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -28,8 +29,11 @@
         <Compile Include="Command/ContactStats.fs" />
         <Compile Include="Command/AzureFunc.fs" />
         <Compile Include="Command/DoitBackup.fs" />
+        <Compile Include="Command/RohlikProducts.fs" />
+        <Compile Include="Command/RohlikAnalyze.fs" />
         <Compile Include="Command/ParseGrafanaMetrics.fs" />
         <Compile Include="Command/StreamTestCommand.fs" />
+        <Compile Include="Command/CognitoStats.fs" />
     </ItemGroup>
 
     <Import Project="..\..\.paket\Paket.Restore.targets" />

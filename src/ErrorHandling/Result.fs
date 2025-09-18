@@ -415,6 +415,19 @@ module AsyncResult =
         |> ofAsyncCatch (f >> List.singleton)
         |> map Seq.toList
 
+    /// Run asyncResults in limitted Parallel, handles the errors and concats results
+    let ofMaxParallelAsyncResults<'Success, 'Error> maxParallel (f: exn -> 'Error) (results: AsyncResult<'Success, 'Error> list): AsyncResult<'Success list, 'Error list> =
+        results
+        |> List.map (mapError List.singleton)
+        |> fun xA -> Async.Parallel(xA, maxParallel)
+        |> ofAsyncCatch (f >> List.singleton)
+        |> bind (
+            Seq.toList
+            >> Validation.ofResults
+            >> Result.mapError List.concat
+            >> ofResult
+        )
+
     /// Run asyncResults in Parallel, handles the errors and concats results
     let ofSequentialAsyncResults<'Success, 'Error> (f: exn -> 'Error) (results: AsyncResult<'Success, 'Error> list): AsyncResult<'Success list, 'Error list> =
         results

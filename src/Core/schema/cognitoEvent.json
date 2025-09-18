@@ -1,0 +1,42 @@
+{
+    "eventVersion": "1.09",
+    "userIdentity": {
+        "type": "Unknown",
+        "accountId": "acc-id"
+    },
+    "eventTime": "2025-05-28T08:15:36Z",
+    "eventSource": "cognito-idp.amazonaws.com",
+    "eventName": "Token_POST",
+    "awsRegion": "eu-west-1",
+    "sourceIPAddress": "127.0.0.1",
+    "requestParameters": null,
+    "responseElements": null,
+    "additionalEventData": {
+        "responseParameters": {
+            "status": 200
+        },
+        "clientId": "client-id",
+        "requestParameters": {
+            "grant_type": [
+                "client_credentials"
+            ]
+        },
+        "userPoolDomain": "user-pool.auth.eu-west-1.amazoncognito.com",
+        "userPoolId": "eu-west-1_id"
+    },
+    "requestID": "36f33918-3c04-4668-946a-b58ff41569dd",
+    "eventID": "26e9db01-d63e-4363-9291-a2310ae8c6ff",
+    "readOnly": false,
+    "eventType": "AwsServiceEvent",
+    "managementEvent": true,
+    "recipientAccountId": "account-id",
+    "serviceEventDetails": {
+        "serviceAccountId": "svc-account-id"
+    },
+    "eventCategory": "Management",
+    "tlsDetails": {
+        "tlsVersion": "TLSv1.3",
+        "cipherSuite": "TLS_AES_128_GCM_SHA256",
+        "clientProvidedHostHeader": "user-pool.auth.eu-west-1.amazoncognito.com"
+    }
+}
