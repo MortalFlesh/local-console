@@ -19,7 +19,7 @@ let main argv =
             Options = []
             Initialize = None
             Interact = None
-            Execute = Writer.example
+            Execute = Monad.execute
         }
 
         command "repository:backup" {
@@ -201,6 +201,50 @@ let main argv =
             Initialize = None
             Interact = None
             Execute = StreamTestCommand.execute
+        }
+
+        command "cognito:stats" {
+            Description = "Show stats for cognito users."
+            Help = None
+            Arguments = CognitoStats.args
+            Options = CognitoStats.options
+            Initialize = None
+            Interact = None
+            Execute = CognitoStats.execute
+        }
+
+        command "rohlik:products" {
+            Description = "Analyze products from Rohlik order history and show product summary."
+            Help = commandHelp [
+                "The <c:dark-green>{{command.name}}</c> analyzes your Rohlik order history:"
+                "        <c:dark-green>dotnet {{command.full_name}}</c> <c:dark-yellow>credentials.json</c> <c:gray>[order-limit]</c>"
+                ""
+                "Example credentials.json:"
+                "        <c:gray>{</c>"
+                "            <c:dark-yellow>\"username\"</c>: <c:green>\"your-email@example.com\"</c>,"
+                "            <c:dark-yellow>\"password\"</c>: <c:green>\"your-password\"</c>"
+                "        <c:gray>}</c>"
+            ]
+            Arguments = RohlikProductsCommand.arguments
+            Options = RohlikProductsCommand.options
+            Initialize = None
+            Interact = None
+            Execute = RohlikProductsCommand.execute
+        }
+
+        command "rohlik:analyze" {
+            Description = "Analyze Rohlik product data from NDJSON file and display as table."
+            Help = commandHelp [
+                "The <c:dark-green>{{command.name}}</c> reads and displays product data from an NDJSON file:"
+                "        <c:dark-green>dotnet {{command.full_name}}</c> <c:dark-yellow>rohlik-products.ndjson</c>"
+                ""
+                "If no file is specified, it will look for 'rohlik-products.ndjson' in the current directory."
+            ]
+            Arguments = RohlikAnalyzeCommand.arguments
+            Options = RohlikAnalyzeCommand.options
+            Initialize = None
+            Interact = None
+            Execute = RohlikAnalyzeCommand.execute
         }
     }
     |> run argv

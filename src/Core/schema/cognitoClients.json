@@ -1,0 +1,18 @@
+[
+    {
+        "poolId": "eu-west-1_id",
+        "poolName": "pool-name",
+        "clients": [
+            {
+                "ClientId": "client-id",
+                "UserPoolId": "eu-west-1_id",
+                "ClientName": "client-name"
+            },
+            {
+                "ClientId": "client-id",
+                "UserPoolId": "eu-west-1_id",
+                "ClientName": "client-name"
+            }
+        ]
+    }
+]

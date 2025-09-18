@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="AssemblyInfo.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../ErrorHandling/ErrorHandling.fsproj" />
+        <ProjectReference Include="../Utils/Utils.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="Rohlik.fs" />
+    </ItemGroup>
+
+    <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
