@@ -7,15 +7,27 @@ module Chat =
     open MF.ConsoleApplication
     open Microsoft.Extensions.AI
     open FSharp.Control
+    open FSharp.Data
 
     type ResponseMessage =
         | Message of string
         | AiChatResponse of ChatResponse
 
+    type private ResponseSchema = JsonProvider<""" { "data": "message" } """>
+
+    [<RequireQualifiedAccess>]
+    module ResponseMessage =
+        let text = function
+            | Message msg -> msg
+            | AiChatResponse response ->
+                try response.Text |> ResponseSchema.Parse |> fun r -> r.Data
+                with _ -> response.Text
+
     type private Duration = int64
 
     type private Response = {
         Model: AiModel
+        Role: string option
         Message: ResponseMessage
         FirstResponse: Duration option
         Total: Stopwatch option
@@ -72,25 +84,32 @@ module Chat =
                 |> String.concat "; "
                 |> sprintf " <c:gray>// %s</c>"
 
-        let private baseMessage model response meta =
-            sprintf "<c:green>Ai<%s>:</c> %s %s"
+        let private baseMessage model role response meta =
+            sprintf "<c:green>Ai<%s%s>:</c> %s %s"
                 model
+                (
+                    match role with
+                    | Some role -> sprintf "|%s" role
+                    | None -> ""
+                )
                 $"{response}"
                 meta
 
-        let message response =
-            let message text = baseMessage (AiModel.format response.Model) text (meta response)
-
-            match response with
-            | { Message = Message text } -> message text
-            | { Message = AiChatResponse response } -> message response
+        let message (response: Response) =
+            response.Message
+            |> ResponseMessage.text
+            |> fun text -> baseMessage (AiModel.format response.Model) response.Role text (meta response)
 
     [<RequireQualifiedAccess>]
-    module private Response =
-        let get (client: IChatClient) (question: string) = asyncResult {
+    module Response =
+        let get<'Type> logError (client: IChatClient) (question: string) = asyncResult {
             let! response =
-                client.GetResponseAsync(question)
-                |> AsyncResult.ofTaskCatch (fun e -> "Failed to get AI response.")
+                client.GetResponseAsync<'Type>(question)
+                |> AsyncResult.ofTaskCatch (fun e ->
+                    logError e.Message
+                    "Failed to get AI response."
+                )
+                |> AsyncResult.retryWithExponential logError 1000 3
 
             return response
         }
@@ -100,19 +119,75 @@ module Chat =
             |> AsyncSeq.ofAsyncEnum
             |> AsyncSeq.map (fun message -> message.Text)
 
+    [<RequireQualifiedAccess>]
+    module private Classification =
+        let private classificationPrompt categories input =
+            [
+                "Please classify the following text into one of these categories:"
+                categories |> String.concat ", "
+                "Provide only the category name as the response."
+                ""
+                sprintf "Text: %s" input
+            ]
+            |> String.concat "\n"
+
+        let classify logError (client: IChatClient) (userMessage: string) =
+            userMessage
+            |> classificationPrompt [ "Technology"; "Gaming"; "Health"; "Other" ]
+            |> Response.get<string> logError client
+
+    [<RequireQualifiedAccess>]
+    module private Summarization =
+        let private summarizationPrompt input =
+            [
+                "Summarize the following text in 1 concise sentence:"
+                ""
+                input
+            ]
+            |> String.concat "\n"
+
+        let summarize logError client text =
+            text
+            |> summarizationPrompt
+            |> Response.get<string> logError client
+
+    [<RequireQualifiedAccess>]
+    module private SentimentAnalysis =
+        let private sentimentPrompt input =
+            [
+                "Analyze the sentiment of the following text. Is it Positive, Negative, or Neutral?"
+                "Provide only the sentiment as the response."
+                ""
+                input
+            ]
+            |> String.concat "\n"
+
+        let analyze logError client text =
+            text
+            |> sentimentPrompt
+            |> Response.get<string> logError client
+
     type RunSettings = {
         Model: AiModel
-        ResponseType: ResponseType
+        ResponseType: ResponseType list
     }
 
     let run (output: Output) settings (client: IChatClient) = asyncResult {
         let mutable isRunning = true
+        let logError msg = output.Error("Error: %s", msg)
+
         let createResponse first total message = {
             Model = settings.Model
+            Role = None
             Message = message
             FirstResponse = first
             Total = total
         }
+
+        let show (stopwatch: Stopwatch) response =
+            if stopwatch.IsRunning then
+                stopwatch.Stop()
+            output.Message(Format.message response)
 
         while isRunning do
             let question = output.Ask "User:"
@@ -121,29 +196,70 @@ module Chat =
                 isRunning <- false
 
             else
-                output.Message("<c:gray>%s: Thinking ...</c>", settings.Model |> AiModel.format)
+                output.Message("<c:gray>Ai<%s>: Thinking ...</c>", settings.Model |> AiModel.format)
                 let stopwatch = Stopwatch.StartNew()
                 let mutable firstResponse = None
 
-                if settings.ResponseType = Streaming then
-                    do!
-                        question
-                        |> Response.getStreaming client
-                        |> AsyncSeq.iterAsync (fun message -> async {
-                            if firstResponse.IsNone then
-                                firstResponse <- Some stopwatch.ElapsedMilliseconds
+                let! (response: Response) =
+                    match settings.ResponseType with
+                    | r when r |> List.contains Streaming ->
+                        asyncResult {
+                            do!
+                                question
+                                |> Response.getStreaming client
+                                |> AsyncSeq.iterAsync (fun message -> async {
+                                    if firstResponse.IsNone then
+                                        firstResponse <- Some stopwatch.ElapsedMilliseconds
 
-                            output.Write message
-                        })
-                        |> AsyncResult.ofAsyncCatch (fun e -> "Failed to get streaming AI response.")
+                                    output.Write message
+                                })
+                                |> AsyncResult.ofAsyncCatch (fun e ->
+                                    logError e.Message
+                                    "Failed to get streaming AI response."
+                                )
+                            output.WriteLine ""
 
-                    stopwatch.Stop()
-                    output.WriteLine(Format.message (createResponse firstResponse (Some stopwatch) (Message "")))
-                else
-                    let! response = Response.get client question
+                            return createResponse firstResponse (Some stopwatch) (Message "")
+                        }
+                    | _ ->
+                        asyncResult {
+                            let! response = Response.get<string> logError client question
+                            return createResponse None (Some stopwatch) (AiChatResponse response)
+                        }
 
-                    stopwatch.Stop()
-                    output.Message(Format.message (createResponse None (Some stopwatch) (AiChatResponse response)))
+                show stopwatch response
+
+                let perform name action =
+                    asyncResult {
+                        let stopwatch = Stopwatch.StartNew()
+                        let! actionResult =
+                            response.Message
+                            |> ResponseMessage.text
+                            |> action logError client
+
+                        stopwatch.Stop()
+
+                        createResponse None (Some stopwatch) (AiChatResponse actionResult)
+                        |> fun response -> { response with Role = Some name }
+                        |> show stopwatch
+                    }
+
+                do!
+                    settings.ResponseType
+                    |> List.filter (fun rt -> rt <> Instant && rt <> Streaming)
+                    |> List.map (function
+                        | Classification -> perform "classification" Classification.classify
+                        | Summarization -> perform "summarization" Summarization.summarize
+                        | SentimentAnalysis -> perform "sentimentAnalysis" SentimentAnalysis.analyze
+
+                        | _ -> asyncResult { return () }
+                    )
+                    |> AsyncResult.ofParallelAsyncResults (fun e ->
+                        logError e.Message
+                        "Failed to get additional AI response."
+                    )
+                    |> AsyncResult.mapError (List.distinct >> String.concat ", ")
+                    |> AsyncResult.ignore
 
         output.Success "Done"
     }

@@ -2,20 +2,24 @@ namespace MF.AI
 
 type AiModel =
     | GPT5Mini
+    | GPT4OMini
 
 [<RequireQualifiedAccess>]
 module AiModel =
     let format = function
         | GPT5Mini -> "gpt-5-mini"
+        | GPT4OMini -> "gpt-4o-mini"
 
 type ResponseType =
     | Instant
     | Streaming
+    | Classification
+    | Summarization
+    | SentimentAnalysis
 
 type Settings = {
     Model: AiModel
     TokenKey: string
-    ResponseType: ResponseType
 }
 
 [<RequireQualifiedAccess>]
@@ -67,6 +71,7 @@ module internal Configuration =
         let client =
             match settings.Model with
             | GPT5Mini -> OpenAIClient(credential, options).GetChatClient("openai/gpt-5-mini").AsIChatClient()
+            | GPT4OMini -> OpenAIClient(credential, options).GetChatClient("openai/gpt-4o-mini").AsIChatClient()
 
         return client
     }

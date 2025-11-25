@@ -580,3 +580,45 @@ module AsyncResultComputationExpression =
                 this.Bind (result |> AsyncResult.ofResult, f)
 
     let asyncResult = AsyncResultBuilder()
+
+[<AutoOpen>]
+module AsyncResultExtension =
+
+    [<RequireQualifiedAccess>]
+    module AsyncResult =
+        type private RetryPolicy =
+            // exponential backoff does not make a sense, even 100ms in 4th iteration would be like 27hours
+            | LinearBackoff of baseWaitMilliSeconds: int
+            | ConstantBackoff of baseWaitMilliSeconds: int
+
+        type private MaxAttempts = MaxAttempts of int
+
+        let rec private retryBy log policy (MaxAttempts maxAttempts) attemptsLeft (xA: AsyncResult<'a, 'b>): AsyncResult<'a, 'b> =
+            if attemptsLeft > 0 then
+                async {
+                    match! xA with
+                    | Ok success -> return Ok success
+                    | Error _ ->
+                        let currentAttempt = maxAttempts - attemptsLeft + 1
+                        let waitMs =
+                            match policy with
+                            | LinearBackoff waitFor -> waitFor * currentAttempt
+                            | ConstantBackoff waitFor -> waitFor
+                        log <| sprintf "Retrying [%d/%d] in %dms ..." currentAttempt maxAttempts waitMs
+
+                        do! Async.Sleep waitMs
+                        return! retryBy log policy (MaxAttempts maxAttempts) (attemptsLeft - 1) xA
+                }
+            else xA
+
+        /// It will retry a failed result after an `waitMs` until all `attempts` are wasted.
+        let retryWith log waitMs attempts xA =
+            retryBy log (ConstantBackoff waitMs) (MaxAttempts attempts) attempts xA
+
+        /// It will retry a failed result after an (`currentAttempt * waitMs`) until all `attempts` are wasted.
+        let retryWithExponential log baseWaitMs attempts xA =
+            retryBy log (LinearBackoff baseWaitMs) (MaxAttempts attempts) attempts xA
+
+        /// It will retry a failed result after an `waitMs` until all `attempts` are wasted.
+        let retry waitMs attempts xA =
+            retryWith ignore waitMs attempts xA

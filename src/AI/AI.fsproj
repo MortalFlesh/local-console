@@ -17,6 +17,7 @@
     <ItemGroup>
         <Compile Include="Configuration.fs" />
         <Compile Include="Chat.fs" />
+        <Compile Include="Structured.fs" />
         <Compile Include="ChatCommand.fs" />
     </ItemGroup>
 
