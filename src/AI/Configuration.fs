@@ -3,9 +3,19 @@ namespace MF.AI
 type AiModel =
     | GPT5Mini
 
+[<RequireQualifiedAccess>]
+module AiModel =
+    let format = function
+        | GPT5Mini -> "gpt-5-mini"
+
+type ResponseType =
+    | Instant
+    | Streaming
+
 type Settings = {
     Model: AiModel
     TokenKey: string
+    ResponseType: ResponseType
 }
 
 [<RequireQualifiedAccess>]

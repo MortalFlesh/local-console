@@ -1,5 +1,6 @@
 FSharp.Data
 MF.ConsoleApplication
+FSharp.Control.AsyncSeq
 Microsoft.Extensions.AI
 Microsoft.Extensions.AI.OpenAI
 Microsoft.Extensions.Configuration

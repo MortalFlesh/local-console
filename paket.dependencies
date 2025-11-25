@@ -12,6 +12,7 @@ nuget libphonenumber-csharp
 nuget Fake.IO.FileSystem
 
 # AI
+nuget FSharp.Control.AsyncSeq ~> 3.2
 nuget Microsoft.Extensions.AI 9.10.2
 nuget Microsoft.Extensions.AI.OpenAI 9.10.2-preview.1.25552.1
 nuget Microsoft.Extensions.Configuration 9.0.11

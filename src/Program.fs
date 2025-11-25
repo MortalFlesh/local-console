@@ -247,12 +247,12 @@ let main argv =
             Interact = None
             Execute = RohlikAnalyzeCommand.execute
         }
-        
+
         command "ai:chat" {
             Description = "Start an AI chat session."
             Help = None
             Arguments = ChatCommand.args
-            Options = []
+            Options = ChatCommand.options
             Initialize = None
             Interact = None
             Execute = ChatCommand.execute
