@@ -9,6 +9,30 @@ module Chat =
     open FSharp.Control
     open FSharp.Data
 
+    type Prompt =
+        | UserMessage of string
+        | AiChatMessage of ChatMessage
+        | History of ChatMessage list
+
+    [<RequireQualifiedAccess>]
+    module Prompt =
+        open System.Collections.Generic
+
+        let private toList (msg: ChatMessage list): List<ChatMessage> =
+            let list = List<ChatMessage>()
+            list.AddRange(msg)
+            list
+
+        let asChatMessage = function
+            | UserMessage msg -> [ ChatMessage(ChatRole.User, msg) ] |> toList
+            | AiChatMessage chatMsg -> [ chatMsg ] |> toList
+            | History msgs -> msgs |> toList
+
+        let fromHistory (history: ChatMessage seq) =
+            history
+            |> Seq.toList
+            |> History
+
     type ResponseMessage =
         | Message of string
         | AiChatResponse of ChatResponse
@@ -102,9 +126,9 @@ module Chat =
 
     [<RequireQualifiedAccess>]
     module Response =
-        let get<'Type> logError (client: IChatClient) (question: string) = asyncResult {
+        let get<'Type> logError (client: IChatClient) (question: Prompt) = asyncResult {
             let! response =
-                client.GetResponseAsync<'Type>(question)
+                client.GetResponseAsync<'Type>(question |> Prompt.asChatMessage)
                 |> AsyncResult.ofTaskCatch (fun e ->
                     logError e.Message
                     "Failed to get AI response."
@@ -114,8 +138,8 @@ module Chat =
             return response
         }
 
-        let getStreaming (client: IChatClient) (question: string) =
-            client.GetStreamingResponseAsync(question)
+        let getStreaming (client: IChatClient) (question: Prompt) =
+            client.GetStreamingResponseAsync(question |> Prompt.asChatMessage)
             |> AsyncSeq.ofAsyncEnum
             |> AsyncSeq.map (fun message -> message.Text)
 
@@ -134,6 +158,7 @@ module Chat =
         let classify logError (client: IChatClient) (userMessage: string) =
             userMessage
             |> classificationPrompt [ "Technology"; "Gaming"; "Health"; "Other" ]
+            |> UserMessage
             |> Response.get<string> logError client
 
     [<RequireQualifiedAccess>]
@@ -149,6 +174,7 @@ module Chat =
         let summarize logError client text =
             text
             |> summarizationPrompt
+            |> UserMessage
             |> Response.get<string> logError client
 
     [<RequireQualifiedAccess>]
@@ -165,14 +191,18 @@ module Chat =
         let analyze logError client text =
             text
             |> sentimentPrompt
+            |> UserMessage
             |> Response.get<string> logError client
 
     type RunSettings = {
         Model: AiModel
         ResponseType: ResponseType list
+        SystemMessage: string option
     }
 
-    let run (output: Output) settings (client: IChatClient) = asyncResult {
+    let private history = ResizeArray<ChatMessage>()
+
+    let run (output: Output) (settings: RunSettings) (client: IChatClient) = asyncResult {
         let mutable isRunning = true
         let logError msg = output.Error("Error: %s", msg)
 
@@ -189,29 +219,48 @@ module Chat =
                 stopwatch.Stop()
             output.Message(Format.message response)
 
+        settings.SystemMessage |> Option.iter (fun sysMsg ->
+            history.Add(ChatMessage(ChatRole.System, sysMsg))
+        )
+
         while isRunning do
             let question = output.Ask "User:"
 
             if question = "exit" then
                 isRunning <- false
 
+            elif question = "history" then
+                output.Section "Chat History:"
+                history
+                |> Seq.iter (fun msg ->
+                    let role = sprintf "<c:yellow>%s</c>" (msg.Role.ToString())
+                    output.Message("%s: %s", role, msg.Text)
+                )
+
             else
                 output.Message("<c:gray>Ai<%s>: Thinking ...</c>", settings.Model |> AiModel.format)
-                let stopwatch = Stopwatch.StartNew()
+                let question = AiChatMessage <| ChatMessage(ChatRole.User, question)
+                history.AddRange(question |> Prompt.asChatMessage)
+
                 let mutable firstResponse = None
+                let stopwatch = Stopwatch.StartNew()
 
                 let! (response: Response) =
                     match settings.ResponseType with
                     | r when r |> List.contains Streaming ->
                         asyncResult {
+                            let wholeResponse = System.Text.StringBuilder()
+
                             do!
-                                question
+                                history
+                                |> Prompt.fromHistory
                                 |> Response.getStreaming client
                                 |> AsyncSeq.iterAsync (fun message -> async {
                                     if firstResponse.IsNone then
                                         firstResponse <- Some stopwatch.ElapsedMilliseconds
 
                                     output.Write message
+                                    wholeResponse.Append(message) |> ignore
                                 })
                                 |> AsyncResult.ofAsyncCatch (fun e ->
                                     logError e.Message
@@ -219,11 +268,18 @@ module Chat =
                                 )
                             output.WriteLine ""
 
+                            history.Add(ChatMessage(ChatRole.Assistant, wholeResponse.ToString()))
+
                             return createResponse firstResponse (Some stopwatch) (Message "")
                         }
                     | _ ->
                         asyncResult {
-                            let! response = Response.get<string> logError client question
+                            let! (response: ChatResponse<string>) =
+                                history
+                                |> Prompt.fromHistory
+                                |> Response.get<string> logError client
+                            history.Add(ChatMessage(ChatRole.Assistant, response.Text))
+
                             return createResponse None (Some stopwatch) (AiChatResponse response)
                         }
 

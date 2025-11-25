@@ -60,6 +60,7 @@ module Structured =
                 listingText
             ]
             |> String.concat "\n"
+            |> Chat.UserMessage
 
         let show (response: ChatResponse<CarDetails>) =
             if output.IsVerbose() then
