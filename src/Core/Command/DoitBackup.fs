@@ -5,7 +5,7 @@ module DoitBackupCommand =
     open System.IO
     open MF.ConsoleApplication
     open MF.Utils
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
     open MF.DoIt
 
     type Output =

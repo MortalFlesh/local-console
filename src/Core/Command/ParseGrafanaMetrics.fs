@@ -9,8 +9,8 @@ module ParseGrafanaMetricsCommand =
     open System.IO
     open FSharp.Data
     open MF.ConsoleApplication
-    open MF.ErrorHandling
-    open MF.ErrorHandling.AsyncResult.Operators
+    open Feather.ErrorHandling
+    open Feather.ErrorHandling.AsyncResult.Operators
     open MF.Utils
 
     type MertricSchema = JsonProvider<"schema/grafanaMetrics.json", SampleIsList=true>

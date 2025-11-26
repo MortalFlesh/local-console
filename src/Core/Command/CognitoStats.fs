@@ -10,7 +10,7 @@ module CognitoStats =
     open FSharp.Data
     open MF.ConsoleApplication
     open MF.Utils
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
 
     let args = [
         Argument.required "clients" "Clients input (json file)."

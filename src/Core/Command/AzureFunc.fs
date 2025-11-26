@@ -5,7 +5,7 @@ module AzureFuncCommand =
     open FSharp.Data
     open System.Collections.Concurrent
     open MF.Utils
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
     open MF.ConsoleApplication
     open MF.LocalConsole.Console
 

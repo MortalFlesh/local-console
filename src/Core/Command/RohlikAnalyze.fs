@@ -6,7 +6,7 @@ module RohlikAnalyzeCommand =
     open System.IO
     open MF.ConsoleApplication
     open MF.Utils
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
     open MF.Rohlik
     open FSharp.Data
 

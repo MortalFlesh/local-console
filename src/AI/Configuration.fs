@@ -39,7 +39,7 @@ type Settings = {
 
 [<RequireQualifiedAccess>]
 module internal Configuration =
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
     open Microsoft.Extensions.AI
     open Microsoft.Extensions.Configuration
     open OpenAI

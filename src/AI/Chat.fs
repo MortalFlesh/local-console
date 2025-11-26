@@ -3,7 +3,7 @@ namespace MF.AI
 [<RequireQualifiedAccess>]
 module Chat =
     open System.Diagnostics
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
     open MF.ConsoleApplication
     open Microsoft.Extensions.AI
     open FSharp.Control

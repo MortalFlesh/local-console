@@ -45,7 +45,7 @@ Create a JSON file with your Rohlik credentials:
 
 ```fsharp
 open MF.Rohlik
-open MF.ErrorHandling
+open Feather.ErrorHandling
 
 let credentials = {
     Username = "your-email@example.com"
@@ -61,7 +61,7 @@ let result = Api.getOrderHistoryProductSummary credentials 50
 The API is built using:
 
 - **FSharp.Data**: For HTTP requests and JSON type providers
-- **MF.ErrorHandling**: For AsyncResult error handling patterns
+- **Feather.ErrorHandling**: For AsyncResult error handling patterns
 - **Cookie Management**: For session handling
 
 ## Implementation Notes

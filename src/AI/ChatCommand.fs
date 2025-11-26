@@ -4,7 +4,7 @@ namespace MF.AI
 module ChatCommand =
     open System.IO
     open MF.ConsoleApplication
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
 
     let args = [
         Argument.required "model" "AI model to use."

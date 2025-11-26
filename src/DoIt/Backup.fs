@@ -12,8 +12,8 @@ module DoItBackup =
     open System
     open MF.ConsoleStyle
     open MF.Utils
-    open MF.ErrorHandling
-    open MF.ErrorHandling.AsyncResult.Operators
+    open Feather.ErrorHandling
+    open Feather.ErrorHandling.AsyncResult.Operators
 
     [<AutoOpen>]
     module private Loader =

@@ -5,3 +5,4 @@ Microsoft.Extensions.AI
 Microsoft.Extensions.AI.OpenAI
 Microsoft.Extensions.Configuration
 Microsoft.Extensions.Configuration.UserSecrets
+Feather.ErrorHandling

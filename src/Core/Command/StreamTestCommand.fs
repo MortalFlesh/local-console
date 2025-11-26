@@ -10,7 +10,7 @@ module StreamTestCommand =
 
     open MF.ConsoleApplication
     open MF.Utils
-    open MF.ErrorHandling
+    open Feather.ErrorHandling
 
     [<RequireQualifiedAccess>]
     module StreamFile =

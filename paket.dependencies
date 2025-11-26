@@ -11,6 +11,8 @@ nuget Newtonsoft.Json
 nuget libphonenumber-csharp
 nuget Fake.IO.FileSystem
 
+nuget Feather.ErrorHandling ~> 1.0
+
 # AI
 nuget FSharp.Control.AsyncSeq ~> 3.2
 nuget Microsoft.Extensions.AI 9.10.2

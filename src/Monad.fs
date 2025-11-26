@@ -1,6 +1,6 @@
 namespace MF.Monad
 
-open MF.ErrorHandling
+open Feather.ErrorHandling
 
 module Helper =
     let runAsyncResult (ar: AsyncResult<'a, 'e>) =
