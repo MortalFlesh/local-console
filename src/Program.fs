@@ -257,5 +257,15 @@ let main argv =
             Interact = None
             Execute = ChatCommand.execute
         }
+
+        command "ai:embedding" {
+            Description = "Start an AI embedding."
+            Help = None
+            Arguments = EmbeddingCommand.args
+            Options = EmbeddingCommand.options
+            Initialize = None
+            Interact = None
+            Execute = EmbeddingCommand.execute
+        }
     }
     |> run argv

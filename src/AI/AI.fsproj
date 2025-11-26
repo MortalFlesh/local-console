@@ -18,7 +18,10 @@
         <Compile Include="ChatTools.fs" />
         <Compile Include="Chat.fs" />
         <Compile Include="Structured.fs" />
+        <Compile Include="Embedding.fs" />
+
         <Compile Include="ChatCommand.fs" />
+        <Compile Include="EmbeddingCommand.fs" />
     </ItemGroup>
 
     <Import Project="..\..\.paket\Paket.Restore.targets" />
