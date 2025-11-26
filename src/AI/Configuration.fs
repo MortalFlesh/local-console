@@ -4,11 +4,26 @@ type AiModel =
     | GPT5Mini
     | GPT4OMini
 
+type AiFamily =
+    | OpenAI
+
 [<RequireQualifiedAccess>]
 module AiModel =
     let format = function
         | GPT5Mini -> "gpt-5-mini"
         | GPT4OMini -> "gpt-4o-mini"
+
+    let url = function
+        | GPT5Mini
+        | GPT4OMini -> "https://models.github.ai/inference"
+
+    let model = function
+        | GPT5Mini -> "openai/gpt-5-mini"
+        | GPT4OMini -> "openai/gpt-4o-mini"
+
+    let family = function
+        | GPT5Mini
+        | GPT4OMini -> OpenAI
 
 type ResponseType =
     | Instant
@@ -63,15 +78,15 @@ module internal Configuration =
 
         let credential = ApiKeyCredential token
 
-        let options =
-            OpenAIClientOptions(
-                Endpoint = System.Uri "https://models.github.ai/inference"
-            )
-
         let client =
-            match settings.Model with
-            | GPT5Mini -> OpenAIClient(credential, options).GetChatClient("openai/gpt-5-mini").AsIChatClient()
-            | GPT4OMini -> OpenAIClient(credential, options).GetChatClient("openai/gpt-4o-mini").AsIChatClient()
+            match settings.Model |> AiModel.family with
+            | OpenAI ->
+                let options =
+                    OpenAIClientOptions(
+                        Endpoint = (settings.Model |> AiModel.url |> System.Uri)
+                    )
+
+                OpenAIClient(credential, options).GetChatClient(settings.Model |> AiModel.model).AsIChatClient()
 
         return client
     }
