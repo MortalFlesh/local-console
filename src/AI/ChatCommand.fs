@@ -24,6 +24,7 @@ module ChatCommand =
         Option.noValue "sentiment" (Some "t") "Use sentiment analysis response from the AI model."
 
         Option.noValue "car" None "Use structured data extraction for car listings."
+        Option.noValue "functions" (Some "f") "Whether to enable function calling capability."
     ]
 
     let private responseTypes input =
@@ -51,9 +52,11 @@ module ChatCommand =
                 |> Result.ofOption "AI model is required."
                 |> Result.bind AiModel.parse
 
+            let useFunctions = Input.Option.isValueSet "functions" input
             use! client = Configuration.connectClient {
                 Model = model
                 TokenKey = "GitHubModels:Token"
+                UseFunctions = useFunctions
             }
 
             if Input.Option.isValueSet "car" input
@@ -63,10 +66,10 @@ module ChatCommand =
 
             else
                 output.Title "AI Chat Command"
-                output.Note "Type 'exit' to quit."
+                output.Note "Type 'exit' to quit; type 'history' to see the conversation history."
 
                 let responseType = input |> responseTypes
-                output.Note ("Using response type: %A", responseType)
+                output.Note ("Response Type: %A; Using functions: %s", responseType, if useFunctions then "yes" else "no")
 
                 let systemMessage =
                     match input with
@@ -80,12 +83,16 @@ module ChatCommand =
                     | _ -> None
                 systemMessage |> Option.iter (fun _ -> output.Note "Using system message")
 
+                let log msg =
+                    File.AppendAllText("chat_tool.log", msg + "\n")
+
                 do!
                     client
                     |> Chat.run output {
                         Model = model
                         ResponseType = responseType
                         SystemMessage = systemMessage
+                        Options = if useFunctions then Some (Chat.options (ChatTool.tools log)) else None
                     }
 
             return ExitCode.Success

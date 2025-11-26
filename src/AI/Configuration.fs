@@ -52,6 +52,7 @@ type ResponseType =
 type Settings = {
     Model: AiModel
     TokenKey: string
+    UseFunctions: bool
 }
 
 [<RequireQualifiedAccess>]
@@ -111,6 +112,12 @@ module internal Configuration =
                     settings.Model |> AiModel.model
                 )
                 :> IChatClient
+
+        let client =
+            if settings.UseFunctions then
+                ChatClientBuilder(client).UseFunctionInvocation().Build()
+            else
+                client
 
         return client
     }

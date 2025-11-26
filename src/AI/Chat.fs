@@ -14,15 +14,17 @@ module Chat =
         | AiChatMessage of ChatMessage
         | History of ChatMessage list
 
-    [<RequireQualifiedAccess>]
-    module Prompt =
+    [<AutoOpen>]
+    module internal Utils =
         open System.Collections.Generic
 
-        let private toList (msg: ChatMessage list): List<ChatMessage> =
-            let list = List<ChatMessage>()
-            list.AddRange(msg)
+        let toList (items: 'Item list): List<'Item> =
+            let list = List<'Item>()
+            list.AddRange items
             list
 
+    [<RequireQualifiedAccess>]
+    module Prompt =
         let asChatMessage = function
             | UserMessage msg -> [ ChatMessage(ChatRole.User, msg) ] |> toList
             | AiChatMessage chatMsg -> [ chatMsg ] |> toList
@@ -126,9 +128,9 @@ module Chat =
 
     [<RequireQualifiedAccess>]
     module Response =
-        let get<'Type> logError (client: IChatClient) (question: Prompt) = asyncResult {
+        let getWithOptions<'Type> logError (client: IChatClient) (options: ChatOptions) (question: Prompt) = asyncResult {
             let! response =
-                client.GetResponseAsync<'Type>(question |> Prompt.asChatMessage)
+                client.GetResponseAsync<'Type>(question |> Prompt.asChatMessage, options)
                 |> AsyncResult.ofTaskCatch (fun e ->
                     logError e.Message
                     "Failed to get AI response."
@@ -138,10 +140,16 @@ module Chat =
             return response
         }
 
-        let getStreaming (client: IChatClient) (question: Prompt) =
-            client.GetStreamingResponseAsync(question |> Prompt.asChatMessage)
+        let get<'Type> logError (client: IChatClient) (question: Prompt) =
+            getWithOptions<'Type> logError client (ChatOptions()) question
+
+        let getStreamingWithOptions (client: IChatClient) (options: ChatOptions) (question: Prompt) =
+            client.GetStreamingResponseAsync(question |> Prompt.asChatMessage, options)
             |> AsyncSeq.ofAsyncEnum
             |> AsyncSeq.map (fun message -> message.Text)
+
+        let getStreaming (client: IChatClient) (question: Prompt) =
+            getStreamingWithOptions client (ChatOptions()) question
 
     [<RequireQualifiedAccess>]
     module private Classification =
@@ -198,6 +206,7 @@ module Chat =
         Model: AiModel
         ResponseType: ResponseType list
         SystemMessage: string option
+        Options: ChatOptions option
     }
 
     let private history = ResizeArray<ChatMessage>()
@@ -242,6 +251,11 @@ module Chat =
                 let question = AiChatMessage <| ChatMessage(ChatRole.User, question)
                 history.AddRange(question |> Prompt.asChatMessage)
 
+                let chatOptions =
+                    match settings.Options with
+                    | Some opts -> opts
+                    | None -> ChatOptions()
+
                 let mutable firstResponse = None
                 let stopwatch = Stopwatch.StartNew()
 
@@ -254,7 +268,7 @@ module Chat =
                             do!
                                 history
                                 |> Prompt.fromHistory
-                                |> Response.getStreaming client
+                                |> Response.getStreamingWithOptions client chatOptions
                                 |> AsyncSeq.iterAsync (fun message -> async {
                                     if firstResponse.IsNone then
                                         firstResponse <- Some stopwatch.ElapsedMilliseconds
@@ -278,7 +292,7 @@ module Chat =
                             let! (response: ChatResponse<string>) =
                                 history
                                 |> Prompt.fromHistory
-                                |> Response.get<string> logError client
+                                |> Response.getWithOptions<string> logError client chatOptions
                             history.Add(ChatMessage(ChatRole.Assistant, response.Text))
 
                             let response = createResponse None (Some stopwatch) (AiChatResponse response)
@@ -321,3 +335,8 @@ module Chat =
 
         output.Success "Done"
     }
+
+    let options tools =
+        ChatOptions(
+            Tools = toList tools
+        )
