@@ -268,9 +268,10 @@ module Chat =
                                 )
                             output.WriteLine ""
 
-                            history.Add(ChatMessage(ChatRole.Assistant, wholeResponse.ToString()))
+                            let wholeResponseText = wholeResponse.ToString()
+                            history.Add(ChatMessage(ChatRole.Assistant, wholeResponseText))
 
-                            return createResponse firstResponse (Some stopwatch) (Message "")
+                            return createResponse firstResponse (Some stopwatch) (Message wholeResponseText)
                         }
                     | _ ->
                         asyncResult {
@@ -280,10 +281,11 @@ module Chat =
                                 |> Response.get<string> logError client
                             history.Add(ChatMessage(ChatRole.Assistant, response.Text))
 
-                            return createResponse None (Some stopwatch) (AiChatResponse response)
-                        }
+                            let response = createResponse None (Some stopwatch) (AiChatResponse response)
+                            show stopwatch response
 
-                show stopwatch response
+                            return response
+                        }
 
                 let perform name action =
                     asyncResult {

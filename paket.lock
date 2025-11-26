@@ -135,6 +135,8 @@ NUGET
     Microsoft.NETCore.Platforms (7.0.4)
     Microsoft.NETCore.Targets (5.0)
     Newtonsoft.Json (13.0.3)
+    OllamaSharp (5.4.9)
+      Microsoft.Extensions.AI.Abstractions (>= 9.10)
     OpenAI (2.7)
       System.ClientModel (>= 1.8.1)
       System.Net.ServerSentEvents (>= 9.0.9)

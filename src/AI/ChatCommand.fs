@@ -6,8 +6,13 @@ module ChatCommand =
     open MF.ConsoleApplication
     open Feather.ErrorHandling
 
+    let private models =
+        AiModel.All
+        |> List.map (AiModel.format >> sprintf "<c:dark-yellow>%s</c>")
+        |> String.concat ", "
+
     let args = [
-        Argument.required "model" "AI model to use."
+        Argument.required "model" (sprintf "AI model to use. There are following models available: %s." models)
     ]
 
     let options = [
@@ -41,12 +46,12 @@ module ChatCommand =
     let execute = ExecuteAsyncResult <| fun (input, output) ->
         asyncResult {
             let! model =
-                match input |> Input.Argument.asString "model" with
-                | Some "gpt-5-mini" -> Ok GPT5Mini
-                | Some "gpt-4o-mini" -> Ok GPT4OMini
-                | _ -> Error "Unsupported model."
+                input
+                |> Input.Argument.asString "model"
+                |> Result.ofOption "AI model is required."
+                |> Result.bind AiModel.parse
 
-            let! client = Configuration.connectClient {
+            use! client = Configuration.connectClient {
                 Model = model
                 TokenKey = "GitHubModels:Token"
             }
@@ -64,12 +69,15 @@ module ChatCommand =
                 output.Note ("Using response type: %A", responseType)
 
                 let systemMessage =
-                    input
-                    |> Input.Option.asString "system"
-                    |> Option.map (function
-                        | file when file.Contains "." && File.Exists(file) -> File.ReadAllText(file)
-                        | msg -> msg
-                    )
+                    match input with
+                    | Input.Option.IsSet "system" _ ->
+                        input
+                        |> Input.Option.asString "system"
+                        |> Option.map (function
+                            | file when file.Contains "." && File.Exists(file) -> File.ReadAllText(file)
+                            | msg -> msg
+                        )
+                    | _ -> None
                 systemMessage |> Option.iter (fun _ -> output.Note "Using system message")
 
                 do!

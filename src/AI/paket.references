@@ -3,6 +3,7 @@ MF.ConsoleApplication
 FSharp.Control.AsyncSeq
 Microsoft.Extensions.AI
 Microsoft.Extensions.AI.OpenAI
+OllamaSharp
 Microsoft.Extensions.Configuration
 Microsoft.Extensions.Configuration.UserSecrets
 Feather.ErrorHandling

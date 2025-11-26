@@ -19,6 +19,7 @@ nuget Microsoft.Extensions.AI 9.10.2
 nuget Microsoft.Extensions.AI.OpenAI 9.10.2-preview.1.25552.1
 nuget Microsoft.Extensions.Configuration 9.0.11
 nuget Microsoft.Extensions.Configuration.UserSecrets 9.0.11
+nuget OllamaSharp ~> 5.4
 
 # AI - subdependencies, because of .NET 9/10 issues
 nuget Microsoft.Extensions.AI.Abstractions ~> 9
