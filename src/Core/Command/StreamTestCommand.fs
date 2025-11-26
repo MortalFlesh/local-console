@@ -8,7 +8,7 @@ module StreamTestCommand =
     open System.Text
     open System.Threading.Tasks
 
-    open MF.ConsoleApplication
+    open Feather.ConsoleApplication
     open MF.Utils
     open Feather.ErrorHandling
 

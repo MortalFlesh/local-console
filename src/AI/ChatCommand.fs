@@ -3,7 +3,7 @@ namespace MF.AI
 [<RequireQualifiedAccess>]
 module ChatCommand =
     open System.IO
-    open MF.ConsoleApplication
+    open Feather.ConsoleApplication
     open Feather.ErrorHandling
 
     let private models =

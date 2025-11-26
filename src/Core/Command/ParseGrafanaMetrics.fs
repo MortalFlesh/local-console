@@ -8,7 +8,7 @@ module ParseGrafanaMetricsCommand =
     open System.Net.Mail
     open System.IO
     open FSharp.Data
-    open MF.ConsoleApplication
+    open Feather.ConsoleApplication
     open Feather.ErrorHandling
     open Feather.ErrorHandling.AsyncResult.Operators
     open MF.Utils

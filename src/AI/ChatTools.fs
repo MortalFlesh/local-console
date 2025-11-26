@@ -2,7 +2,7 @@ namespace MF.AI
 
 module ChatTool =
     open System
-    open MF.ConsoleApplication
+    open Feather.ConsoleApplication
     open Microsoft.Extensions.AI
     open System.Collections.Generic
 

@@ -4,7 +4,7 @@ namespace MF.AI
 module Chat =
     open System.Diagnostics
     open Feather.ErrorHandling
-    open MF.ConsoleApplication
+    open Feather.ConsoleApplication
     open Microsoft.Extensions.AI
     open FSharp.Control
     open FSharp.Data

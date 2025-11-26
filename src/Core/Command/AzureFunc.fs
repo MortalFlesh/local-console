@@ -6,7 +6,7 @@ module AzureFuncCommand =
     open System.Collections.Concurrent
     open MF.Utils
     open Feather.ErrorHandling
-    open MF.ConsoleApplication
+    open Feather.ConsoleApplication
     open MF.LocalConsole.Console
 
     let execute = ExecuteAsyncResult <| fun (input, output) -> asyncResult {
