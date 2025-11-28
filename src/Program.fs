@@ -1,9 +1,10 @@
 open System
 open System.IO
-open MF.ConsoleApplication
+open Feather.ConsoleApplication
 open MF.LocalConsole
 open MF.LocalConsole.Console
 open MF.Monad
+open MF.AI
 
 [<EntryPoint>]
 let main argv =
@@ -245,6 +246,26 @@ let main argv =
             Initialize = None
             Interact = None
             Execute = RohlikAnalyzeCommand.execute
+        }
+
+        command "ai:chat" {
+            Description = "Start an AI chat session."
+            Help = None
+            Arguments = ChatCommand.args
+            Options = ChatCommand.options
+            Initialize = None
+            Interact = None
+            Execute = ChatCommand.execute
+        }
+
+        command "ai:embedding" {
+            Description = "Start an AI embedding."
+            Help = None
+            Arguments = EmbeddingCommand.args
+            Options = EmbeddingCommand.options
+            Initialize = None
+            Interact = None
+            Execute = EmbeddingCommand.execute
         }
     }
     |> run argv

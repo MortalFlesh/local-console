@@ -4,12 +4,34 @@ storage: none
 
 nuget FSharp.Core ~> 9.0
 nuget FSharp.Data ~> 6.0
-nuget MF.ConsoleApplication ~> 7.0
+nuget Feather.ConsoleApplication ~> 1.0
+nuget Feather.ErrorHandling ~> 1.0
 nuget System.IO.Pipelines ~> 9.0
 nuget LibGit2Sharp
 nuget Newtonsoft.Json
 nuget libphonenumber-csharp
 nuget Fake.IO.FileSystem
+
+# AI
+nuget FSharp.Control.AsyncSeq ~> 3.2
+nuget Microsoft.Extensions.AI 9.10.2
+nuget Microsoft.Extensions.AI.OpenAI 9.10.2-preview.1.25552.1
+nuget Microsoft.Extensions.Configuration 9.0.11
+nuget Microsoft.Extensions.Configuration.UserSecrets 9.0.11
+nuget OllamaSharp ~> 5.4
+nuget Microsoft.Extensions.VectorData.Abstractions ~> 9.7
+nuget Microsoft.SemanticKernel.Connectors.InMemory 1.67.1-preview
+nuget Microsoft.SemanticKernel.Connectors.Qdrant 1.67.1-preview
+
+# AI - subdependencies, because of .NET 9/10 issues
+nuget Microsoft.Extensions.AI.Abstractions ~> 9
+nuget Microsoft.Extensions.Configuration.Json ~> 9
+nuget Microsoft.Extensions.FileProviders.Physical ~> 9
+nuget Microsoft.Extensions.Caching.Abstractions ~> 9
+nuget Microsoft.Extensions.Configuration.FileExtensions ~> 9
+nuget Microsoft.Extensions.FileSystemGlobbing ~> 9
+nuget System.Numerics.Tensors ~> 9
+nuget System.Memory.Data ~> 9
 
 // [ FAKE GROUP ]
 group Build

@@ -1,7 +1,8 @@
 FSharp.Data
-MF.ConsoleApplication
+Feather.ConsoleApplication
 LibGit2Sharp
 Newtonsoft.Json
 libphonenumber-csharp
 Fake.IO.FileSystem
 System.IO.Pipelines
+Feather.ErrorHandling

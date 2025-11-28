@@ -10,10 +10,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../ErrorHandling/ErrorHandling.fsproj" />
         <ProjectReference Include="../Utils/Utils.fsproj" />
         <ProjectReference Include="../DoIt/DoIt.fsproj" />
         <ProjectReference Include="../Rohlik/Rohlik.fsproj" />
+        <ProjectReference Include="../AI/AI.fsproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -14,7 +14,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Rohlik.fs" />
+        <Compile Include="Configuration.fs" />
+        <Compile Include="ChatTools.fs" />
+        <Compile Include="Chat.fs" />
+        <Compile Include="Structured.fs" />
+        <Compile Include="Embedding.fs" />
+        <Compile Include="VectorSearch.fs" />
+
+        <Compile Include="ChatCommand.fs" />
+        <Compile Include="EmbeddingCommand.fs" />
     </ItemGroup>
 
     <Import Project="..\..\.paket\Paket.Restore.targets" />
