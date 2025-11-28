@@ -19,6 +19,9 @@ nuget Microsoft.Extensions.AI.OpenAI 9.10.2-preview.1.25552.1
 nuget Microsoft.Extensions.Configuration 9.0.11
 nuget Microsoft.Extensions.Configuration.UserSecrets 9.0.11
 nuget OllamaSharp ~> 5.4
+nuget Microsoft.Extensions.VectorData.Abstractions ~> 9.7
+nuget Microsoft.SemanticKernel.Connectors.InMemory 1.67.1-preview
+nuget Microsoft.SemanticKernel.Connectors.Qdrant 1.67.1-preview
 
 # AI - subdependencies, because of .NET 9/10 issues
 nuget Microsoft.Extensions.AI.Abstractions ~> 9

@@ -1,22 +1,23 @@
 namespace MF.AI
 
+open System
+
 type EmbeddingSettings = {
     Model: AiEmbeddingModel
     Text: string list
     Compare: bool
 }
 
+type EmbeddingResult = ReadOnlyMemory<float32>
+
 [<RequireQualifiedAccess>]
 module Embedding =
-    open System
     open Microsoft.Extensions.AI
     open Feather.ConsoleApplication
     open Feather.ErrorHandling
     open System.Numerics.Tensors
 
-    type private EmbeddingResult = ReadOnlyMemory<float32>
-
-    let private generateEmbeddings (output: Output) (client: EmbeddingClient) text: AsyncResult<EmbeddingResult, _> = asyncResult {
+    let generateEmbeddings (output: Output) (client: EmbeddingClient) text: AsyncResult<EmbeddingResult, _> = asyncResult {
         let! (embedding: ReadOnlyMemory<float32>) =
             client.GenerateVectorAsync text
             |> AsyncResult.ofTaskCatch (fun e ->
@@ -49,8 +50,7 @@ module Embedding =
             |> AsyncResult.ofSequentialAsyncResults (fun e -> "Failed to generate embeddings")
             |> AsyncResult.mapError (List.distinct >> String.concat ", ")
 
-        if settings.Compare
-        then
+        if settings.Compare then
             output.Section "Cosine Similarity"
 
             cartesian (embeddings, embeddings)

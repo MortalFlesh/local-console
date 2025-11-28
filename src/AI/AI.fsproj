@@ -19,6 +19,7 @@
         <Compile Include="Chat.fs" />
         <Compile Include="Structured.fs" />
         <Compile Include="Embedding.fs" />
+        <Compile Include="VectorSearch.fs" />
 
         <Compile Include="ChatCommand.fs" />
         <Compile Include="EmbeddingCommand.fs" />

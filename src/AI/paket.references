@@ -7,3 +7,6 @@ Microsoft.Extensions.AI.OpenAI
 OllamaSharp
 Microsoft.Extensions.Configuration
 Microsoft.Extensions.Configuration.UserSecrets
+Microsoft.Extensions.VectorData.Abstractions
+Microsoft.SemanticKernel.Connectors.InMemory
+Microsoft.SemanticKernel.Connectors.Qdrant

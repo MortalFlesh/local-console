@@ -18,6 +18,7 @@ module EmbeddingCommand =
 
     let options = [
         Option.noValue "compare" (Some "c") "Compare embeddings of all input texts."
+        Option.noValue "search" (Some "s") "Search input in vector store."
     ]
 
     let execute = ExecuteAsyncResult <| fun (input, output) ->
@@ -34,6 +35,7 @@ module EmbeddingCommand =
             }
 
             let compareWords = Input.Option.isValueSet "compare" input
+            let searchInVectorStore = Input.Option.isValueSet "search" input
 
             output.Title "AI Embedding Command"
 
@@ -45,9 +47,15 @@ module EmbeddingCommand =
                     | msg -> msg
                 )
 
-            do!
-                client
-                |> Embedding.generate output {
+            match searchInVectorStore with
+            | true ->
+                do! client |> VectorSearch.search output {
+                    Model = model
+                    Text = text
+                    SearchIn = InMemory
+                }
+            | _ ->
+                do! client |> Embedding.generate output {
                     Model = model
                     Text = text
                     Compare = compareWords
